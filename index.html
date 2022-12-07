@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Itim&family=Lexend:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <title>Library</title>
+  </head>
+  <body>
+    <div class="signUp-popup" id="signup-popup">
+      <div>
+        <div class="signin-button">
+          <button id="form-sign-in-button">signin</button>
+          <button class="popup-close-button" id="popup-close">X</button>
+        </div>
+        <h3>Signup</h3>
+        <p>Signup to gain access to our exclusive library resources.</p>
+        <form action="">
+          <div class="row-spc-btw">
+            <div>
+              <div>First Name</div>
+              <input type="text" />
+            </div>
+            <div>
+              <div>Last Name</div>
+              <input type="text" />
+            </div>
+          </div>
+          <div>
+            <div>Email</div>
+            <input type="text" />
+          </div>
+          <div>
+            <div>Password</div>
+            <input type="text" />
+          </div>
+          <div>
+            <div>Re-enter Password</div>
+            <input type="text" />
+          </div>
+          <div>
+            <button id="signUp-submit-button" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="signUp-popup" id="signin-popup">
+      <div>
+        <div class="signin-button">
+          <button id="form-sign-up-button">signup</button>
+          <button
+            class="sign-in-popup-close-button"
+            id="sign-in-popup-close-button"
+          >
+            X
+          </button>
+        </div>
+        <h3>Signin</h3>
+        <p>Signin to gain access to our exclusive library resources.</p>
+        <form id="signIn-submit-button" action="">
+          <div>
+            <div>Email</div>
+            <input type="text" />
+          </div>
+          <div>
+            <div>Password</div>
+            <input type="text" />
+          </div>
+          <div>
+            <button type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <header class="header">
+      <div class="content">
+        <div class="burger-button">
+          <div class="burger-menu" id="burger-menu">
+            <nav>
+              <ul>
+                <li><button></button></li>
+              </ul>
+            </nav>
+          </div>
+          <button id="burger-button">
+            <img src="img/burger-menu-icon.png" alt="" />
+          </button>
+        </div>
+        <nav class="header-navigation">
+          <ul>
+            <li><button id="signUp-button">Signup</button></li>
+            <li><button id="signIn-button">Signin</button></li>
+            <li><button id="contact-button">Contact</button></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="main">
+      <div class="content">
+        <div class="search">
+          <form action="">
+            <div><input type="text" /></div>
+            <button id="search-button" type="submit">
+              <img src="img/search-icon.png" alt="" />
+            </button>
+          </form>
+        </div>
+        <div class="books-preview">
+          <h1>Over 1,000 books</h1>
+          <div class="slider"></div>
+        </div>
+        <div class="information">
+          <p>
+            Registered members can now access our books online and reserve
+            before coming to the library
+          </p>
+          <p>All books must be returned within 30 day in perfect conditon.</p>
+        </div>
+        <div class="selected-book-preview"></div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="content">
+        <div>
+          <h3>Contact:</h3>
+          <p>Lekki phase 1, Banana Island, Lagos</p>
+        </div>
+      </div>
+    </footer>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,229 @@
+*{
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+*,*:before,*:after{
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+:focus,:active{outline: none;}
+a:focus,a:active{outline: none;}
+nav,footer,header,aside{display: block;}
+html,body{
+	height: 100%;
+	width: 100%;
+	font-size: 100%;
+	line-height: 1;
+	font-size: 14px;
+	-ms-text-size-adjust: 100%;
+	-moz-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+input,button,textarea{font-family:inherit;}
+input::-ms-clear{display: none;}
+button{cursor: pointer;}
+button::-moz-focus-inner {padding:0;border:0;}
+a, a:visited{text-decoration: none;}
+a:hover{text-decoration: none;}
+ul li{list-style: none;}
+img{vertical-align: top;}
+h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
+button {
+  background-color: transparent;
+}
+/*--------------------*/
+body {
+  /* background-color: rgb(212, 188, 188); */
+  color: #0B0E61;
+  font-family: 'Inter';
+}
+.header > .content{
+position: relative;
+padding-top: 15px;
+padding-bottom: 15px;
+display: flex;
+justify-content: space-between;
+}
+.content {
+  max-width: 428px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 15px;
+  background: #fff;
+}
+.burger-button {
+  position: relative;
+  z-index: 2;
+}
+.burger-menu {
+  position: absolute;
+  z-index: 1;
+    top: 25px;
+    left: -100vw;
+    height: 100vh;
+    width: 80vw;
+  background: rgba(200, 202, 239, 0.56);
+/* opacity: 0;
+visibility: hidden; */
+transition: all ease 0.5s;
+}
+.header-navigation >ul {
+  display: flex;
+  gap: 10px;
+}
+.header-navigation >ul > li > button {
+  color: #0B0E61;
+}
+.main {
+}
+.search {
+  margin-bottom: 15px;
+}
+.search >form{
+  display: flex;
+  gap: 5px;
+}
+.search >form > div {
+  display: flex;
+  flex-grow: 1;
+}
+.search >form > div >input {
+padding: 5px;
+  flex-grow: 1;
+  background: rgba(200, 202, 239, 0.9);
+border-radius: 8px;
+}
+.books-preview {
+  margin-bottom: 15px;
+}
+.books-preview > h1{
+font-family: 'Itim';
+font-style: normal;
+font-weight: 400;
+font-size: 35px;
+line-height: 42px;
+}
+.slider {
+  height: 116px;
+  background-color: bisque;
+  border: 1px solid black;
+  width: 100%;
+}
+.information {
+font-size: 17px;
+line-height: 21px;
+margin-bottom: 15px;
+}
+.information p:first-child {
+  margin-bottom: 10px;
+}
+.selected-book-preview {
+  width: auto;
+height: 225px;
+margin-left: auto;
+margin-right: auto;
+background: rgba(200, 202, 239, 0.56);
+border-radius: 16px;
+margin-bottom: 43px;
+}
+.footer > .content > div{
+  width: auto;
+margin-left: auto;
+margin-right: auto;
+background: #2F3678;
+border-radius: 8px;
+padding: 27px 0px 15px 6px;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+color: rgba(255, 255, 255, 0.9);
+}
+.signUp-popup {
+  opacity: 0;
+  visibility: hidden;
+  transition: all ease 0.3s;
+position: fixed;
+max-width: 428px;
+z-index: 1;
+left: 50%;
+transform: translateX(-50%);
+top: 0;
+height: 100%;
+width: 100%;
+background: url(img/main-bg.svg) center no-repeat, #3B65A4;
+
+}
+.signUp-popup {
+  position: fixed;
+max-width: 428px;
+z-index: 1;
+left: 50%;
+transform: translateX(-50%);
+top: 0;
+height: 100%;
+width: 100%;
+background: url(img/main-bg.svg) center no-repeat, #3B65A4;
+}
+.signUp-popup > div {
+  background: rgba(255, 255, 255, 0.99);
+border-radius: 16px;
+margin: 29px;
+position: relative;
+padding: 10px 11px 36px 11px;
+
+}
+.signUp-popup > div > form {
+  display:  flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.popup-close-button {
+font-size: 20px;
+}
+.firstLastNames {
+  display: flex;
+  gap: 19px;
+}
+.signUp-popup > div > form > div > div >input, 
+.signUp-popup > div > form > div > input {
+background: #C8CAEF;
+border-radius: 8px;
+ width: 100%;
+ padding: 10px;
+margin-top: 5px;
+}
+.signin-button {
+  display: flex;
+  justify-content: space-between;
+ font-size: 12px;
+
+}
+.signUp-popup > div > h3 {
+  font-weight: 700;
+font-size: 32px;
+text-align: center;
+margin-bottom: 15px;
+}
+.signUp-popup > div > p {
+  font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+margin-bottom: 30px;
+}
+
+.signUp-popup > div > form > div > button {
+  background: #0B0E61;
+  border-radius: 8px;
+  width: 100%;
+  padding: 15px;
+  color: #fff;
+  font-weight: 700;
+font-size: 20px;
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
+}
