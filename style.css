@@ -64,6 +64,7 @@ justify-content: space-between;
     left: -100vw;
     height: 100vh;
     width: 80vw;
+    max-width: 428px;
   background: rgba(200, 202, 239, 0.56);
 /* opacity: 0;
 visibility: hidden; */
@@ -146,7 +147,7 @@ color: rgba(255, 255, 255, 0.9);
   transition: all ease 0.3s;
 position: fixed;
 max-width: 428px;
-z-index: 1;
+z-index: 3;
 left: 50%;
 transform: translateX(-50%);
 top: 0;
@@ -155,17 +156,7 @@ width: 100%;
 background: url(img/main-bg.svg) center no-repeat, #3B65A4;
 
 }
-.signUp-popup {
-  position: fixed;
-max-width: 428px;
-z-index: 1;
-left: 50%;
-transform: translateX(-50%);
-top: 0;
-height: 100%;
-width: 100%;
-background: url(img/main-bg.svg) center no-repeat, #3B65A4;
-}
+
 .signUp-popup > div {
   background: rgba(255, 255, 255, 0.99);
 border-radius: 16px;
