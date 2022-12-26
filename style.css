@@ -61,15 +61,27 @@ justify-content: space-between;
   position: absolute;
   z-index: 1;
     top: 25px;
-    left: -100vw;
+    left: -104vw;
     height: 100vh;
-    width: 80vw;
+    width: 100vw;
     max-width: 428px;
-  background: rgba(200, 202, 239, 0.56);
-/* opacity: 0;
-visibility: hidden; */
+  background: rgba(200, 202, 239, 1);
+  padding: 20px;
 transition: all ease 0.5s;
 }
+
+.burger-menu > nav > ul > li {
+  border-bottom: 1px solid #0B0E61;
+}
+.burger-menu > nav > ul > li > a{
+  color: #0B0E61;
+    font-family: 'Inter';
+    font-weight: 700;
+    font-size: 37px;
+    line-height: 71px;
+}
+
+
 .header-navigation >ul {
   display: flex;
   gap: 10px;
@@ -217,4 +229,7 @@ font-size: 20px;
 .visible {
   opacity: 1;
   visibility: visible;
+}
+.header-text-colored {
+  color: #802650;
 }

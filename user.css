@@ -1,0 +1,61 @@
+
+body {
+  display: flex;
+  flex-direction: column;
+gap: 15px;
+background: rgba(200, 202, 239, 0.56);
+}
+body .content {
+  background: none;
+}
+footer {
+  margin-top: auto;
+}
+.books-list button {
+  font-family: 'Itim';
+font-style: normal;
+font-weight: 400;
+font-size: 35px;
+line-height: 42px;
+color: #0B0E61;
+padding-right: 25px;
+background: url(img/arrow\ down.svg) right 15px no-repeat;
+margin: 15px 0;
+}
+
+.catalogue-wrapper.slider {
+  height: fit-content;
+  border: none;
+  max-height: 0px;
+  overflow: hidden;
+  transition: all ease 0.3s;
+}
+.catalogue-wrapper-content {
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.user-info .photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: gray;
+ width: 73px;
+ height: 73px;
+ border-radius: 70px;
+}
+.user-info .text-content {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: #0B0E61;
+}
+.user-info .text-content :first-child {
+  color: rgba(200, 202, 239, 0.9)
+}
