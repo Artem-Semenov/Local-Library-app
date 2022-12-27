@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Itim&family=Lexend:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="user.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+    <title>User</title>
+  </head>
+  <body>
+    <div class="signUp-popup" id="signup-popup">
+      <div>
+        <div class="signin-button">
+          <button id="form-sign-in-button">signin</button>
+          <button class="popup-close-button" id="popup-close">X</button>
+        </div>
+        <h3>Signup</h3>
+        <p>Signup to gain access to our exclusive library resources.</p>
+        <form action="">
+          <div class="row-spc-btw">
+            <div>
+              <div>First Name</div>
+              <input type="text" id="sign-up-first-name" />
+            </div>
+            <div>
+              <div>Last Name</div>
+              <input type="text" id="sign-up-last-name" />
+            </div>
+          </div>
+          <div>
+            <div>Email</div>
+            <input type="text" id="sign-up-email" />
+          </div>
+          <div>
+            <div>Password</div>
+            <input type="password" id="sign-up-password" />
+          </div>
+          <div>
+            <div>Re-enter Password</div>
+            <input type="password" />
+          </div>
+          <div>
+            <button id="signUp-submit-button" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="signUp-popup" id="signin-popup">
+      <div>
+        <div class="signin-button">
+          <button id="form-sign-up-button">signup</button>
+          <button
+            class="sign-in-popup-close-button"
+            id="sign-in-popup-close-button"
+          >
+            X
+          </button>
+        </div>
+        <h3>Signin</h3>
+        <p>Signin to gain access to our exclusive library resources.</p>
+        <form action="">
+          <div>
+            <div>Email</div>
+            <input type="text" id="sign-in-email" />
+          </div>
+          <div>
+            <div>Password</div>
+            <input type="password" id="sign-in-password" />
+          </div>
+          <div>
+            <button type="submit" id="signIn-submit-button">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <header class="header">
+      <div class="content">
+        <div class="burger-button">
+          <div class="burger-menu" id="burger-menu">
+            <nav>
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a id="profile-link">Profile</a></li>
+              </ul>
+            </nav>
+          </div>
+          <button id="burger-button">
+            <img src="img/burger-menu-icon.png" alt="" />
+          </button>
+        </div>
+        <nav class="header-navigation">
+          <ul>
+            <!--  <li><button id="signUp-button">Signup</button></li>
+          <li><button id="signIn-button">Signin</button></li> -->
+            <li><button id="contact-button">Contact</button></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main class="main">
+      <div class="content">
+        <div class="search">
+          <form action="">
+            <div><input type="text" /></div>
+            <button id="search-button" type="submit">
+              <img src="img/search-icon.png" alt="" />
+            </button>
+          </form>
+        </div>
+        <div class="user-info" id="user-info-block">
+          <div class="photo">photo</div>
+          <div class="text-content" id="user-info-text">
+            <!--  <div>${this.getRequest.result[0].role === 101 ? "admin" : "user"}</div>
+    <p>${this.getRequest.result[0].name}</p>
+    <p>${this.getRequest.result[0].email}</p> -->
+          </div>
+        </div>
+        <div class="books-list books-catalogue">
+          <button class="accordBtn" data-id="accordBTn">
+            Catalogue of books
+          </button>
+          <div class="catalogue-wrapper slider" id="catalogue-wrapper">
+            <div class="catalogue-wrapper-content" id="catalogue-content">
+              <!-- <div class="book-wrapper">
+                <button>Take to read</button>
+                <img src="img/book-photo-1.png" alt="book" />
+                <div>
+                  <h3>Sherlock Holmes</h3>
+                  <h4>Author</h4>
+                  <p>
+                    A young private invsetigator who must uncover the mystery
+                    behind sudden disappearances.
+                  </p>
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+
+        <div class="books-list">
+          <button class="accordBtn" data-id="accordBTn">Add new book</button>
+          <div class="catalogue-wrapper slider" id="catalogue-wrapper">
+            <div class="catalogue-wrapper-content">
+              <p>To add new book please fill all the fields and press submit</p>
+              <form action="" class="add-book-form" id="book-add-form">
+                <div>
+                  <input
+                    type="text"
+                    id="input-book-name"
+                    placeholder="Book name"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    id="input-book-author"
+                    placeholder="Author"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    id="input-book-amount"
+                    placeholder="Available cout"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    id="input-book-description"
+                    placeholder="Description"
+                  />
+                </div>
+                <div>
+                  <button type="submit" id="book-add-submit">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="books-list">
+          <button class="accordBtn" data-id="accordBTn">Delete old book</button>
+          <div class="catalogue-wrapper slider" id="catalogue-wrapper">
+            <div class="catalogue-wrapper-content">
+              <h3>Here you can delete book if it is not in library any more</h3>
+              <form action="" class="delete-book-form">
+                <div>Enter exact book name</div>
+                <div>
+                  <input type="text" id="deleteBookNameInput" placeholder="Book name">
+                </div>
+                <div>
+                  <button type="submit" id="deleteSubmitButton">Delete book</button>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="books-list">
+          <button class="accordBtn" data-id="accordBTn">List of orders</button>
+          <div class="catalogue-wrapper slider" id="catalogue-ordered-wrapper">
+            <div class="catalogue-wrapper-content">
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Explicabo ipsam provident nesciunt in laudantium neque! Iure
+                quibusdam omnis aperiam asperiores, expedita ea facilis id,
+                animi odit commodi culpa molestiae veniam.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="books-list">
+          <button class="accordBtn" data-id="accordBTn">
+            List of outdated orders
+          </button>
+          <div class="catalogue-wrapper slider" id="catalogue-ordered-wrapper">
+            <div class="catalogue-wrapper-content">
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Explicabo ipsam provident nesciunt in laudantium neque! Iure
+                quibusdam omnis aperiam asperiores, expedita ea facilis id,
+                animi odit commodi culpa molestiae veniam.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="content">
+        <div>
+          <h3>Contact:</h3>
+          <p>Lekki phase 1, Banana Island, Lagos</p>
+        </div>
+      </div>
+    </footer>
+    <script src="IndexedDB.js"></script>
+    <script src="user.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

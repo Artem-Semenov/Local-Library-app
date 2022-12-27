@@ -107,10 +107,6 @@ document.addEventListener("click", function (e) {
     signUpPopup.classList.add("visible");
   };
 
-  if (e.target.id === 'log-out-button') {
-    dbConnection.clearActiveUserStore()
-    location.reload();
-  };
 
   if (e.target.id == "signup-popup" || e.target.id == "signin-popup") {
     signUpPopup.classList.remove("visible");

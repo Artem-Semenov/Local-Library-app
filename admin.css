@@ -1,0 +1,35 @@
+.add-book-form {
+  margin-top: 15px;
+
+}
+
+.add-book-form, .delete-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+.add-book-form  > div,.delete-book-form > div {
+  display: flex;
+  justify-content: center;
+}
+.add-book-form  > div > input, .delete-book-form > div > input {
+  padding: 10px;
+  width: 100%;
+}
+.add-book-form  > div > button {
+  background: rgb(236, 185, 185);
+  padding: 0 15px;
+  font-family: 'Inter';
+  font-size: 30px;
+  font-weight: 700;
+}
+.delete-book-form > div > button {
+  color: blue;
+  background: rgb(255, 83, 83);
+  padding: 0 10px;
+  margin: 0;
+}
+.delete-book-form > div:first-child {
+  margin-right: auto;
+}

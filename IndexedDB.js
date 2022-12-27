@@ -64,10 +64,10 @@ class DBconnection {
 
   /**
    * METHODS TO ADD OBJECTS TO STORE
-   * 1 - used by admin to add books to the store
+   * 1 - used to add books to the store
    * 2 - used by users to add users to the store
-   * 3 - used by users to add books to the orders
-   * 4 - used to recognize active user
+   * 3 - used to recognize active user
+   * 4 - used to add books to the orders
    */
 
   // 2 - registration(sign up)
@@ -79,6 +79,7 @@ class DBconnection {
     this.request.onsuccess = () => {
       this.transaction = this.db.transaction("users", "readwrite");
       this.storeName = this.transaction.objectStore("users");
+      console.log(this.data);
       this.addRequest = this.storeName.add(this.data);
       this.addRequest.onsuccess = () => {
         console.log("Registration successfull! Now you can sign in");
@@ -93,7 +94,7 @@ class DBconnection {
     };
   };
 
-  // 4 - add active user
+  // 3 - add active user
 
   addActiveUser = (data) => {
     this.data = data;
@@ -109,7 +110,58 @@ class DBconnection {
     };
   };
 
-  addToTheStore = (storeName, data) => {
+  // 1 - add new book to the store
+
+  addBookToStore = (data) => {
+    this.data = data;
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("books", "readwrite");
+      this.storeName = this.transaction.objectStore("books");
+      console.log(this.storeName);
+      this.addRequest = this.storeName.add(this.data);
+      this.addRequest.onsuccess = () => {
+        alert("Book successfully added");
+      };
+      this.addRequest.onerror = () => {
+        console.log("error with adding item to store", e.target);
+        alert("Error! Book was not add");
+      };
+    };
+  };
+
+
+  // 4 - add book to the orders
+
+  addBookToTheOrderList = (name) => {
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction('books');
+      this.storeName = this.transaction.objectStore('books');
+      this.index = this.storeName.index('name')
+      this.getRequest = this.index.get(name)
+      this.getRequest.onerror = this.onError;
+      this.getRequest.onsuccess = () => {
+        let bookData = this.getRequest.result;
+        this.transaction = this.db.transaction('orders', 'readwrite');
+        this.storeName = this.transaction.objectStore('orders');
+        this.addRequest = this.storeName.add(bookData)
+        this.addRequest.onerror = () => {
+          alert('Error! book is already in your orders')
+        };
+        this.addRequest.onsuccess = () => {
+          alert('book ordered!')
+        }
+      }
+
+    }
+  }
+
+  /* addToTheStore = (storeName, data) => {
     this.storeName = storeName;
     // this.type = type;
     this.data = data;
@@ -143,7 +195,7 @@ class DBconnection {
     console.log("error with adding item to store", e.target);
     alert("Error! This email is already used. Try another one.");
   };
-
+ */
   /**
    * METHOD TO GET INFO FROM THE DATABASE
    * 1 - used by user to view list of available books
@@ -170,7 +222,9 @@ class DBconnection {
             // <li><button id="log-out-button">Log Out</button></li>
             `
         <li class='header-text-colored'>You signed in as 
-        ${this.getRequest.result[0].name} (${this.getRequest.result[0].role === 101 ? 'admin' : 'user'})</li>
+        ${this.getRequest.result[0].name} (${
+              this.getRequest.result[0].role === 101 ? "admin" : "user"
+            })</li>
         <li><button id="contact-button">Contact</button></li>
         `;
           document.querySelector(".header-navigation > ul").innerHTML = html;
@@ -200,77 +254,43 @@ class DBconnection {
       this.getRequest = this.storeName.getAll();
       this.getRequest.onsuccess = () => {
         if (this.getRequest.result.length === 1) {
-          let html = `
-        <div class="search">
-        <form action="">
-          <div><input type="text" /></div>
-          <button id="search-button" type="submit">
-            <img src="img/search-icon.png" alt="" />
-          </button>
-        </form>
-      </div>
-      <div class="user-info" id="user-info-block">
-        <div class="photo">photo</div>
-        <div class="text-content">
-          <div>${this.getRequest.result[0].role === 101 ? 'admin' : 'user'}</div>
-          <p>${this.getRequest.result[0].name}</p>
-          <p>${this.getRequest.result[0].email}</p>
-        </div>
-      </div>
-      <div class="books-list">
-        <button class="accordBtn" data-id='accordBTn'>Catalogue of books</button>
-        <div class="catalogue-wrapper slider" id="catalogue-wrapper">
-          <div class="catalogue-wrapper-content">
-             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Explicabo ipsam provident nesciunt in laudantium neque! Iure
-              quibusdam omnis aperiam asperiores, expedita ea facilis id,
-              animi odit commodi culpa molestiae veniam.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="books-list">
-        <button class="accordBtn" data-id='accordBTn'>Ordered books list</button>
-        <div class="catalogue-wrapper slider" id="catalogue-ordered-wrapper">
-          <div class="catalogue-wrapper-content">
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Explicabo ipsam provident nesciunt in laudantium neque! Iure
-              quibusdam omnis aperiam asperiores, expedita ea facilis id,
-              animi odit commodi culpa molestiae veniam.
-            </p>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Explicabo ipsam provident nesciunt in laudantium neque! Iure
-              quibusdam omnis aperiam asperiores, expedita ea facilis id,
-              animi odit commodi culpa molestiae veniam.
-            </p>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Explicabo ipsam provident nesciunt in laudantium neque! Iure
-              quibusdam omnis aperiam asperiores, expedita ea facilis id,
-              animi odit commodi culpa molestiae veniam.
-            </p>
-          </div>
-        </div>
-      </div> `;
+          // render users info(name, email, role)
 
-          document.querySelector(".main > .content").innerHTML = html;
+          document.getElementById("user-info-text").innerHTML = `
+            <div>${
+              this.getRequest.result[0].role === 101 ? "admin" : "user"
+            }</div>
+            <p>${this.getRequest.result[0].name}</p>
+            <p>${this.getRequest.result[0].email}</p>
+            `;
+          //render header buttons
+          document.querySelector(".header-navigation > ul").innerHTML = `
+            <li><button id="log-out-button">Log out</button></li>
+            <li><button id="contact-button">Contact</button></li>`;
 
-          document.querySelector(".header-navigation > ul").innerHTML =`
-          <li><button id="log-out-button">Log out</button></li>
-          <li><button id="contact-button">Contact</button></li>`
-         
+          // render list of all available books
+
+          // if it is regular user
+          if (this.getRequest.result[0].role === 1) {
+            //render list of ordered books
+          }
+
+          //if it is an admin
+          else if (this.getRequest.result[0].role === 101) {
+            //render list of all orders
+            //render list of outdated orders
+          }
         } else {
           let html = "Please log in to get access to all features";
 
           document.querySelector(".main > .content").innerHTML = html;
 
-          document.querySelector(".header-navigation > ul").innerHTML =`
+          document.querySelector(".header-navigation > ul").innerHTML = `
           <li><button id="signIn-button">Signin</button></li>
-          <li><button id="contact-button">Contact</button></li>`
+          <li><button id="contact-button">Contact</button></li>`;
         }
+        this.renderAvailableBooks();
+      
       };
       this.getRequest.onerror = () => {
         alert("Problem happened with loading page. Please contact creator");
@@ -280,23 +300,25 @@ class DBconnection {
 
   //on click on profile.html link - checking if user logged in. If yes - redirecting there
   //If not - alert
-profileLinkRedirect = () => {
-  this.request = indexedDB.open(DB_NAME, DB_VERSION);
-  this.request.onerror = this.onError;
-  this.request.onsuccess = (e) => {
-    this.db = e.target.result;
-    this.transaction = this.db.transaction("activeUser");
-    this.storeName = this.transaction.objectStore("activeUser");
-    this.getRequest = this.storeName.getAll();
-    this.getRequest.onsuccess = () => {
-      if (this.getRequest.result.length === 1) {
-        window.location.href='user.html'
-      } else {
-        alert('log in to access profile')
-      }
-}
-  }
-}
+  profileLinkRedirect = () => {
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("activeUser");
+      this.storeName = this.transaction.objectStore("activeUser");
+      this.getRequest = this.storeName.getAll();
+      this.getRequest.onsuccess = () => {
+        if (this.getRequest.result.length === 1) {
+          if (this.getRequest.result[0].role === 101) {
+            location.href = "admin.html";
+          } else location.href = "user.html";
+        } else {
+          alert("log in to access profile");
+        }
+      };
+    };
+  };
   //sign in method
   //validation
   //redirection to user.html if login successfull;
@@ -323,7 +345,9 @@ profileLinkRedirect = () => {
             // add current user to this store
             this.addActiveUser(currentUserData);
             alert("Login successful! You will be redirected to your profile");
-            location.href = "user.html";
+            if (this.getRequest.result.role === 101) {
+              location.href = "admin.html";
+            } else location.href = "user.html";
           } else {
             alert("password incorrect");
           }
@@ -334,9 +358,82 @@ profileLinkRedirect = () => {
     };
   };
 
-  ////
+  //// render list of available books
 
-  getFromTheStore = (
+  renderAvailableBooks = () => {
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("books");
+      this.storeName = this.transaction.objectStore("books");
+      this.getRequest = this.storeName.getAll();
+      this.getRequest.onsuccess = () => {
+      let item;
+      this.getRequest.result.forEach(el => {
+        item = `
+        <div class="book-wrapper">
+          <button data-id='${el.name}' data-class='take-book-to-read-btn'>Take to read</button>
+          <img src="img/book-photo-1.png" alt="book" />
+          <div>
+            <h3>${el.name}</h3>
+            <h4>${el.author}</h4>
+            <p>
+              ${el.description}
+            </p>
+          </div>
+        </div>
+  `;
+
+        document.getElementById('catalogue-content').insertAdjacentHTML('beforeend', item)
+      }
+        )
+       
+      };
+    };
+    ////////////////////////////
+    setTimeout(() => {
+      this.renderListOfOrders();
+    },1000)
+    ///////////////////////////////
+  };
+
+// render orders
+
+renderListOfOrders = () => {
+  this.request = indexedDB.open(DB_NAME, DB_VERSION);
+  this.request.onerror = this.onError;
+  this.request.onsuccess = (e) => {
+    this.db = e.target.result;
+    this.transaction = this.db.transaction("orders");
+    this.storeName = this.transaction.objectStore("orders");
+    this.getRequest = this.storeName.getAll();
+    this.getRequest.onsuccess = () => {
+    let item;
+    this.getRequest.result.forEach(el => {
+      item = `
+      <div class="book-wrapper">
+        <button data-id='${el.name}' data-class='take-book-to-read-btn'>Take to read</button>
+        <img src="img/book-photo-1.png" alt="book" />
+        <div>
+          <h3>${el.name}</h3>
+          <h4>${el.author}</h4>
+          <p>
+            ${el.description}
+          </p>
+        </div>
+      </div>
+`;
+
+      document.getElementById('list-of-orders').insertAdjacentHTML('beforeend', item)
+    }
+      )
+     
+    };
+  };
+};
+
+  /* getFromTheStore = (
     storeName,
     type,
     index = null,
@@ -372,13 +469,13 @@ profileLinkRedirect = () => {
 
     // console.log(this.getRequest);
 
-    this.getRequest.onerror = this.getRequestOnError;
+    this.getRequest.onerror = this.getRequestOnError; 
   };
 
-  getRequestOnSuccess = (e) => {
+   getRequestOnSuccess = (e) => { 
     let result = this.getRequest.result;
     console.log(result);
-  };
+  }; 
 
   indexRequestOnSuccess = (e) => {
     console.log(this.request);
@@ -389,7 +486,7 @@ profileLinkRedirect = () => {
           ? (this.role = 101)
           : this.getRequest.result.role === 1
           ? (this.role = 1)
-          : (this.role = null); */
+          : (this.role = null); 
       } else {
         alert("password incorrect");
       }
@@ -401,6 +498,7 @@ profileLinkRedirect = () => {
   getRequestOnError = (e) => {
     console.log("error with getting from the store");
   };
+  */
   /**
    * METHOD TO DELETE SPECIFIED ITEMS FROM THE SPECIFIED STORE
    * 1 - used by admin to delete users
@@ -420,13 +518,48 @@ profileLinkRedirect = () => {
       this.storeName = this.transaction.objectStore("activeUser");
       this.deleteRequest = this.storeName.clear();
       this.deleteRequest.onsuccess = () => {
-        console.log("Active users successfully cleared");
+        console.log("Active user successfully cleared");
       };
       this.deleteRequest.onerror = () => {
         console.log("Error with clearing active user");
       };
     };
   };
+
+//delete book from library 
+
+deleteBookFromLibrary = (bookName) => {
+  this.name = bookName
+  this.request = indexedDB.open(DB_NAME, DB_VERSION);
+  this.request.onerror = this.onError;
+  this.request.onsuccess = (e) => {
+    this.db = e.target.result;
+    this.transaction = this.db.transaction("books", 'readwrite');
+    this.storeName = this.transaction.objectStore("books");
+    this.index = this.storeName.index("name");
+    this.getRequest = this.index.getKey(this.name);
+    this.getRequest.onerror = this.onError;
+    this.getRequest.onsuccess = () => {
+      try{
+        this.deleteRequest = this.storeName.delete(this.getRequest.result)
+        this.deleteRequest.onError = this.onError;
+        this.deleteRequest.onsuccess = () => {
+          alert('book was deleted')
+          location.reload()
+        }
+      } 
+      catch {
+        alert('here is no such book')
+      }
+   
+    }
+
+    
+  }
+}
+
+
+
 
   deleteItem = (storeName, id) => {
     this.storeName = storeName;
@@ -459,13 +592,13 @@ profileLinkRedirect = () => {
   }  */
 }
 
-const bookData = {
+/* const bookData = {
   name: "js",
   description: "qweqwnot bad book",
   photo: null,
   totalCount: 10,
   avalCount: 5,
-};
+}; */
 
 const userData = {
   name: "Admin",

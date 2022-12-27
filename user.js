@@ -47,9 +47,10 @@ document.addEventListener('click', function(e) {
    }
   }   
   if (e.target.id === 'log-out-button') {
-    dbConnection.clearActiveUserStore()
-    location.reload();
+    dbConnection.clearActiveUserStore();
+    location.href='/';
   };
+
   if (e.target.id === 'signIn-button') {
     signInPopup.classList.add("visible");
   };
@@ -71,6 +72,11 @@ document.addEventListener('click', function(e) {
     signUpPopup.classList.remove("visible");
     signInPopup.classList.remove("visible");
   };
+  if (e.target.dataset.class === 'take-book-to-read-btn') {
+    let bookName = e.target.dataset.id
+    dbConnection.addBookToTheOrderList(bookName)
+  }
+
 })
 signUpSubmitButton.addEventListener("click", function (e) {
   e.preventDefault();
@@ -95,7 +101,7 @@ document.querySelectorAll('.accordBtn').forEach(el => {
 
   el.addEventListener('click', function(e) {
     let content = this.nextElementSibling;
-    if (content.style.maxHeight) {
+      if (content.style.maxHeight) {
       content.style.maxHeight = null;
    } else {
      content.style.maxHeight = content.scrollHeight + "px";
