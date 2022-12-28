@@ -33,3 +33,23 @@
 .delete-book-form > div:first-child {
   margin-right: auto;
 }
+
+.catalogue-wrapper-content.list-of-orders-content .item-content {
+border-radius: 5px;
+border: 1px solid black;
+padding: 10px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.catalogue-wrapper-content.list-of-orders-content .item-content > h4 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.catalogue-wrapper-content.list-of-orders-content .item-content > p {
+font-size: 17px;
+}
+.catalogue-wrapper-content.list-of-orders-content .item-content > ul li{
+list-style: auto;
+margin-left: 20px;
+}

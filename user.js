@@ -76,6 +76,10 @@ document.addEventListener('click', function(e) {
     let bookName = e.target.dataset.id
     dbConnection.addBookToTheOrderList(bookName)
   }
+  if (e.target.dataset.class === 'return-book-btn') {
+    let bookName = e.target.dataset.id
+    dbConnection.returnBook(bookName)
+  }
 
 })
 signUpSubmitButton.addEventListener("click", function (e) {

@@ -1,5 +1,5 @@
 const DB_NAME = "library";
-const DB_VERSION = 2;
+const DB_VERSION = 7;
 
 class DBconnection {
   constructor() {}
@@ -46,10 +46,12 @@ class DBconnection {
       this.objectStore.createIndex("email", "email", { unique: true });
     }
     if (!this.db.objectStoreNames.contains("orders")) {
-      this.db.createObjectStore("orders", {
+         this.objectStore = this.db.createObjectStore("orders", {
         keyPath: "id",
         autoIncrement: true,
       });
+      this.objectStore.createIndex("orderedBy", "orderedBy", { unique: false });
+      this.objectStore.createIndex("name", "name", { unique: false });
     }
     if (!this.db.objectStoreNames.contains("activeUser")) {
       this.db.createObjectStore("activeUser", {
@@ -132,7 +134,6 @@ class DBconnection {
     };
   };
 
-
   // 4 - add book to the orders
 
   addBookToTheOrderList = (name) => {
@@ -140,62 +141,35 @@ class DBconnection {
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
-      this.transaction = this.db.transaction('books');
-      this.storeName = this.transaction.objectStore('books');
-      this.index = this.storeName.index('name')
-      this.getRequest = this.index.get(name)
+      this.transaction = this.db.transaction("books");
+      this.storeName = this.transaction.objectStore("books");
+      this.index = this.storeName.index("name");
+      this.getRequest = this.index.get(name);
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
-        let bookData = this.getRequest.result;
-        this.transaction = this.db.transaction('orders', 'readwrite');
-        this.storeName = this.transaction.objectStore('orders');
-        this.addRequest = this.storeName.add(bookData)
-        this.addRequest.onerror = () => {
-          alert('Error! book is already in your orders')
+        this.bookData = this.getRequest.result;
+        delete this.bookData.id;
+        this.transaction = this.db.transaction("activeUser");
+        this.storeName = this.transaction.objectStore("activeUser");
+        this.getRequest = this.storeName.getAll();
+        this.getRequest.onerror = this.onError;
+        this.getRequest.onsuccess = () => {
+          this.bookData.orderedBy = this.getRequest.result[0].name;
+          this.transaction = this.db.transaction("orders", "readwrite");
+          this.storeName = this.transaction.objectStore("orders");
+          this.addRequest = this.storeName.add(this.bookData);
+          this.addRequest.onerror = () => {
+            alert("Error! This books have finished");
+          };
+          this.addRequest.onsuccess = () => {
+            alert("book ordered!");
+            location.reload();
+          };
         };
-        this.addRequest.onsuccess = () => {
-          alert('book ordered!')
-        }
-      }
+      };
+    };
+  };
 
-    }
-  }
-
-  /* addToTheStore = (storeName, data) => {
-    this.storeName = storeName;
-    // this.type = type;
-    this.data = data;
-    this.request = indexedDB.open(DB_NAME, DB_VERSION);
-    this.request.onsuccess = this.addtoTheStoreOnSuccess;
-    this.request.onerror = this.onError;
-  };
-  addtoTheStoreOnSuccess = (e) => {
-    // console.log("adding to the store");
-    this.db = this.request.result;
-    // console.log(this.data);
-    this.transaction = this.db.transaction([this.storeName], "readwrite");
-    // console.log(this.transaction);
-    this.storeName = this.transaction.objectStore(this.storeName);
-    console.log(this.storeName);
-    this.addRequest = this.storeName.add(this.data);
-    this.transaction.onerror = this.addOnError;
-    this.transaction.onsuccess = this.addOnSuccess;
-    this.addRequest.onsuccess = this.addOnSuccess;
-    this.request.onerror = this.addOnError;
-  };
-  addOnSuccess = (e) => {
-    console.log("successfully added");
-    if (this.type == "SucsSignUp") {
-      alert("Registration successfull! Now you can sign in");
-      signUpPopup.classList.remove("visible");
-      signInPopup.classList.add("visible");
-    }
-  };
-  addOnError = (e) => {
-    console.log("error with adding item to store", e.target);
-    alert("Error! This email is already used. Try another one.");
-  };
- */
   /**
    * METHOD TO GET INFO FROM THE DATABASE
    * 1 - used by user to view list of available books
@@ -242,7 +216,7 @@ class DBconnection {
       };
     };
   };
-  //check active user to render elements of user page
+  //check active user to render elements of user page, in the end calling method to render available books
 
   ativeUserProfileRender = () => {
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -268,10 +242,10 @@ class DBconnection {
             <li><button id="log-out-button">Log out</button></li>
             <li><button id="contact-button">Contact</button></li>`;
 
-          // render list of all available books
+          
 
           // if it is regular user
-          if (this.getRequest.result[0].role === 1) {
+        /*   if (this.getRequest.result[0].role === 1) {
             //render list of ordered books
           }
 
@@ -279,7 +253,7 @@ class DBconnection {
           else if (this.getRequest.result[0].role === 101) {
             //render list of all orders
             //render list of outdated orders
-          }
+          } */
         } else {
           let html = "Please log in to get access to all features";
 
@@ -289,8 +263,8 @@ class DBconnection {
           <li><button id="signIn-button">Signin</button></li>
           <li><button id="contact-button">Contact</button></li>`;
         }
+        // render list of all available books
         this.renderAvailableBooks();
-      
       };
       this.getRequest.onerror = () => {
         alert("Problem happened with loading page. Please contact creator");
@@ -298,8 +272,9 @@ class DBconnection {
     };
   };
 
-  //on click on profile.html link - checking if user logged in. If yes - redirecting there
-  //If not - alert
+  //on click on profile link - checking if user logged in. If yes - redirecting
+  //to admin.html or user.html according to the logged user`s role;
+  //If not logged - alert
   profileLinkRedirect = () => {
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
     this.request.onerror = this.onError;
@@ -320,8 +295,8 @@ class DBconnection {
     };
   };
   //sign in method
-  //validation
-  //redirection to user.html if login successfull;
+  //
+  //redirection to user.html / admin.html if login successfull;
   signIn = (indexName, password) => {
     this.indexName = indexName;
     this.password = password;
@@ -358,7 +333,7 @@ class DBconnection {
     };
   };
 
-  //// render list of available books
+  //// render list of available books, in the end calling method to render ordersList
 
   renderAvailableBooks = () => {
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -369,9 +344,9 @@ class DBconnection {
       this.storeName = this.transaction.objectStore("books");
       this.getRequest = this.storeName.getAll();
       this.getRequest.onsuccess = () => {
-      let item;
-      this.getRequest.result.forEach(el => {
-        item = `
+        let item;
+        this.getRequest.result.forEach((el) => {
+          item = `
         <div class="book-wrapper">
           <button data-id='${el.name}' data-class='take-book-to-read-btn'>Take to read</button>
           <img src="img/book-photo-1.png" alt="book" />
@@ -385,35 +360,46 @@ class DBconnection {
         </div>
   `;
 
-        document.getElementById('catalogue-content').insertAdjacentHTML('beforeend', item)
-      }
-        )
-       
+          document
+            .getElementById("catalogue-content")
+            .insertAdjacentHTML("beforeend", item);
+        });
+
+        this.renderListOfOrders();
       };
     };
-    ////////////////////////////
-    setTimeout(() => {
-      this.renderListOfOrders();
-    },1000)
-    ///////////////////////////////
   };
 
-// render orders
+  // render orders for user
 
-renderListOfOrders = () => {
-  this.request = indexedDB.open(DB_NAME, DB_VERSION);
-  this.request.onerror = this.onError;
-  this.request.onsuccess = (e) => {
-    this.db = e.target.result;
-    this.transaction = this.db.transaction("orders");
-    this.storeName = this.transaction.objectStore("orders");
-    this.getRequest = this.storeName.getAll();
-    this.getRequest.onsuccess = () => {
-    let item;
-    this.getRequest.result.forEach(el => {
-      item = `
+  renderListOfOrders = () => {
+    this.activeUser = null;
+    this.activeUserRole = null;
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("activeUser");
+      this.storeName = this.transaction.objectStore("activeUser");
+      this.getRequest = this.storeName.getAll();
+      this.getRequest.onerror = this.onError;
+      this.getRequest.onsuccess = () => {
+        this.activeUser = this.getRequest.result[0].name;
+        this.activeUserRole = this.getRequest.result[0].role;
+        if (this.activeUserRole === 1) {
+
+        
+        this.transaction = this.db.transaction("orders");
+        this.storeName = this.transaction.objectStore("orders");
+        this.index = this.storeName.index("orderedBy");
+        this.getRequest = this.index.getAll(this.activeUser);
+
+        this.getRequest.onsuccess = () => {
+          let item;
+          this.getRequest.result.forEach((el) => {
+            item = `
       <div class="book-wrapper">
-        <button data-id='${el.name}' data-class='take-book-to-read-btn'>Take to read</button>
+        <button data-id='${el.name}' data-class='return-book-btn'>Return book</button>
         <img src="img/book-photo-1.png" alt="book" />
         <div>
           <h3>${el.name}</h3>
@@ -423,84 +409,80 @@ renderListOfOrders = () => {
           </p>
         </div>
       </div>
-`;
+            `;
+          
+            document
+              .getElementById("list-of-orders")
+              .insertAdjacentHTML("beforeend", item);
+          })
+        ;
+        };
+      } else if (this.activeUserRole === 101) {
+        
+        this.transaction = this.db.transaction("orders");
+        this.storeName = this.transaction.objectStore("orders");
+        this.getRequest = this.storeName.getAll();
+        this.getRequest.onerror = this.onError;
+        this.getRequest.onsuccess = () => {
+        let result = this.getRequest.result;
+        //finding names of those who made orders
+        let orderedByArr = Array.from(new Set(result.map(el => el.orderedBy))) 
+        //finding which books did each of them order
+        //making array with objects(who ordered, [what ordered, quantity])
+        let orders = orderedByArr.map(el => {
+          return {orderedBy: el, 
+            orders: result.filter(elem => elem.orderedBy === el).reduce((acc, el) => {
+              acc[el.name] = (acc[el.name] || 0) + 1;
+              return acc
+            }, {}),
+          }
 
-      document.getElementById('list-of-orders').insertAdjacentHTML('beforeend', item)
-    }
-      )
+        });
+        console.log(orders);
+        let item;
+        orders.forEach(el => {
+          let htmlList = '';
+         Object.keys(el.orders).forEach(elem => {
+          // console.log(elem, el.orders[elem]);
+          htmlList += `
+          <li>${elem} - ${el.orders[elem]} pcs.</li>
+          `;
+          });
+      
+          item = `
+          <div class="item-content">
+                <h4>Person: ${el.orderedBy}</h4>
+                <p>Ordered books:</p>
+                <ul>
+                  ${htmlList}
+                </ul>
+              </div>
+          `;
+          document
+          .getElementById("list-of-orders")
+          .insertAdjacentHTML("beforeend", item);
+        })
      
+      /*   let uniqueTest = {}
+        orders[1].orders.forEach(el => {
+        
+         uniqueTest[el.name] = (uniqueTest[el.name] || 0) + 1
+        })
+      */
+       
+        }
+      }
+
+
+      };
     };
   };
-};
 
-  /* getFromTheStore = (
-    storeName,
-    type,
-    index = null,
-    indexName = null,
-    password = null
-  ) => {
-    this.type = type;
-    this.index = index;
-    this.storeName = storeName;
-    this.indexName = indexName;
-    this.password = password;
-    this.request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    this.request.onsuccess = this.getOnSuccess;
-    this.request.onerror = this.onError;
-  };
 
-  getOnSuccess = (e) => {
-    this.db = e.target.result;
-    // console.log(e);
-    this.transaction = this.db.transaction(this.storeName);
 
-    this.storeName = this.transaction.objectStore(this.storeName);
-    switch (this.type) {
-      case "getAll":
-        this.getRequest = this.storeName.getAll();
-        this.getRequest.onsuccess = this.getRequestOnSuccess;
-      case "index":
-        this.index = this.storeName.index(this.index);
-        this.getRequest = this.index.get(this.indexName);
-        this.getRequest.onsuccess = this.indexRequestOnSuccess;
-    }
-
-    // console.log(this.getRequest);
-
-    this.getRequest.onerror = this.getRequestOnError; 
-  };
-
-   getRequestOnSuccess = (e) => { 
-    let result = this.getRequest.result;
-    console.log(result);
-  }; 
-
-  indexRequestOnSuccess = (e) => {
-    console.log(this.request);
-    try {
-      if (this.getRequest.result.password === this.password) {
-        console.log(this.db.objectStoreNames);
-        /*   this.getRequest.result.role === 101
-          ? (this.role = 101)
-          : this.getRequest.result.role === 1
-          ? (this.role = 1)
-          : (this.role = null); 
-      } else {
-        alert("password incorrect");
-      }
-    } catch {
-      alert("here is no user with such email");
-    }
-  };
-
-  getRequestOnError = (e) => {
-    console.log("error with getting from the store");
-  };
-  */
   /**
-   * METHOD TO DELETE SPECIFIED ITEMS FROM THE SPECIFIED STORE
+   * METHODS TO DELETE ITEMS FROM THE STORES
    * 1 - used by admin to delete users
    * 2 - used by admin to delete books
    * 3 - used by admin to delete orders
@@ -526,70 +508,100 @@ renderListOfOrders = () => {
     };
   };
 
-//delete book from library 
+  //delete book from library
 
-deleteBookFromLibrary = (bookName) => {
-  this.name = bookName
-  this.request = indexedDB.open(DB_NAME, DB_VERSION);
-  this.request.onerror = this.onError;
-  this.request.onsuccess = (e) => {
-    this.db = e.target.result;
-    this.transaction = this.db.transaction("books", 'readwrite');
-    this.storeName = this.transaction.objectStore("books");
-    this.index = this.storeName.index("name");
-    this.getRequest = this.index.getKey(this.name);
+  deleteBookFromLibrary = (bookName) => {
+    this.name = bookName;
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("books", "readwrite");
+      this.storeName = this.transaction.objectStore("books");
+      this.index = this.storeName.index("name");
+      this.getRequest = this.index.getKey(this.name);
+      this.getRequest.onerror = this.onError;
+      this.getRequest.onsuccess = () => {
+        this.bookId = this.getRequest.result
+        try {
+          this.deleteRequest = this.storeName.delete(this.bookId);
+          this.deleteRequest.onError = this.onError;
+          this.deleteRequest.onsuccess = () => {
+
+            this.transaction = this.db.transaction('orders', 'readwrite');
+            this.storeName = this.transaction.objectStore('orders');
+            this.index = this.storeName.index('name')
+            this.getRequest = this.index.getAllKeys(this.name);
+            console.log(this.name);
+            this.getRequest.onerror = this.onError;
+            this.getRequest.onsuccess = () => {
+            this.bookIds = this.getRequest.result
+            console.log(this.index, this.bookIds);
+            this.bookIds.forEach(el => {
+              this.deleteRequest = this.storeName.delete(el)
+            })
+           
+            this.deleteRequest.onerror = this.onError;
+            this.deleteRequest.onsuccess = () => {
+              alert("book was deleted");
+              location.reload();
+            }
+
+            }
+            
+
+
+           
+          };
+        } catch {
+          alert("here is no such book");
+        }
+      };
+    };
+  };
+
+
+//return book to the library(delete from the orders)
+
+returnBook = (bookName) => {
+this.bookName = bookName;
+this.idToDelete = null;
+this.request = indexedDB.open(DB_NAME, DB_VERSION);
+this.request.onerror = this.onError;
+this.request.onsuccess = (e) => {
+  this.db = e.target.result;
+  this.transaction = this.db.transaction("activeUser");
+  this.storeName = this.transaction.objectStore("activeUser");
+  this.getRequest = this.storeName.getAll();
+  this.getRequest.onerror = this.onError;
+  this.getRequest.onsuccess = () => {
+    this.activeUser = this.getRequest.result[0].name;
+
+    this.transaction = this.db.transaction("orders", 'readwrite');
+    this.storeName = this.transaction.objectStore("orders");
+    this.index = this.storeName.index("orderedBy");
+    this.getRequest = this.index.getAll(this.activeUser);
     this.getRequest.onerror = this.onError;
     this.getRequest.onsuccess = () => {
-      try{
-        this.deleteRequest = this.storeName.delete(this.getRequest.result)
-        this.deleteRequest.onError = this.onError;
-        this.deleteRequest.onsuccess = () => {
-          alert('book was deleted')
-          location.reload()
+      this.getRequest.result.forEach(el => {
+        if (el.name === this.bookName) {
+          this.idToDelete = el.id
         }
-      } 
-      catch {
-        alert('here is no such book')
-      }
-   
+      })
+    this.deleteRequest = this.storeName.delete(this.idToDelete)
+    this.deleteRequest.onerror = this.onError;
+    this.deleteRequest.onsuccess = () => {
+      alert('Book was successfullt deleted from your orders')
+      location.reload()
     }
-
-    
-  }
+    this.deleteRequest.onerror = () => {
+      alert('Problem with deleting! Try later')
+    }
+    }
+}
+}
 }
 
-
-
-
-  deleteItem = (storeName, id) => {
-    this.storeName = storeName;
-    this.request = indexedDB.open(DB_NAME, DB_VERSION);
-    this.request.onsuccess = this.deleteOnSuccess;
-    this.request.onerror = this.deleteOnError;
-  };
-
-  deleteOnSuccess = (e) => {
-    this.db = e.target.result;
-    this.transaction = this.db.transaction(this.storeName, "readwrite");
-    this.storeName = this.transaction.objectStore(this.storeName);
-    this.deleteRequest = this.storeName.delete("1");
-    this.deleteRequest.onsuccess = this.deleteRequestOnSuccess;
-    this.deleteRequest.onerror = this.onError;
-  };
-  deleteRequestOnSuccess = () => {
-    console.log("item was succesfully deleted");
-  };
-  /*   deleteOnError = (e) => {
-    console.log("error with deleting item", e);
-  }; */
-
-  ////////////
-
-  /*   checkForStatus = async (e) => {
-    this.request = indexedDB.open(DB_NAME, 1);
-    this.request.onsuccess = (e) => {
-    }
-  }  */
 }
 
 /* const bookData = {
@@ -598,7 +610,7 @@ deleteBookFromLibrary = (bookName) => {
   photo: null,
   totalCount: 10,
   avalCount: 5,
-}; */
+}; 
 
 const userData = {
   name: "Admin",
@@ -606,6 +618,7 @@ const userData = {
   password: "admin",
   role: 101,
 };
+*/
 
 const dbConnection = new DBconnection();
 

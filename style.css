@@ -79,6 +79,7 @@ transition: all ease 0.5s;
     font-weight: 700;
     font-size: 37px;
     line-height: 71px;
+    cursor: pointer;
 }
 
 

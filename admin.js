@@ -2,6 +2,7 @@
 
 document.querySelectorAll(".accordBtn").forEach((el) => {
   el.addEventListener("click", function (e) {
+    e.preventDefault();
     let content = this.nextElementSibling;
     if (content.style.maxHeight) {
       content.style.maxHeight = null;
