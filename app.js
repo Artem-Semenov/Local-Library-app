@@ -49,39 +49,24 @@ request.onupgradeneeded = function(e) {
 
  */
 
+if (location.pathname === "/") {
+  dbConnection.checkActiveUser();
+} else if (location.pathname === '/user.html' 
+|| location.pathname ==='/admin.html'){
+  dbConnection.ativeUserProfileRender();
+};
 
+if(location.pathname === '/search.html') {
+  dbConnection.renderSearchResults(window.location.search.slice(window.location.search.indexOf('=') + 1)
+  .split('+').join(' ').trim())
+}
 
-
-  dbConnection.checkActiveUser()
-
-
-
-
-
-
-  
-    
-
-
-let index = 0;
-
-const burgerButton = document.getElementById("burger-button");
-const popupCloseButton = document.getElementById("popup-close");
-
-const formSignInButton = document.getElementById("form-sign-in-button");
 const signUpPopup = document.getElementById("signup-popup");
-const signInPopupCloseButton = document.getElementById(
-  "sign-in-popup-close-button"
-);
-const formSignUpButton = document.getElementById("form-sign-up-button");
 const signInPopup = document.getElementById("signin-popup");
-const signInButton = document.getElementById("signIn-button");
+
 const burgerMenu = document.getElementById("burger-menu");
 
-const profileLink = document.getElementById('profile-link')
-
-const signUpSubmitButton = document.getElementById("signUp-submit-button");
-const signInSubmitButton = document.getElementById("signIn-submit-button");
+const profileLink = document.getElementById("profile-link");
 
 const signUpFirstName = document.getElementById("sign-up-first-name");
 const signUpLastName = document.getElementById("sign-up-last-name");
@@ -91,88 +76,105 @@ const signUpPassword = document.getElementById("sign-up-password");
 const signInEmail = document.getElementById("sign-in-email");
 const signInPassword = document.getElementById("sign-in-password");
 
+const searchForm = document.getElementById('search-form');
 
-
-const logOutButton = document.getElementById('log-out-button');;
-const signUpButton = document.getElementById("signUp-button");
-
-
-profileLink.addEventListener('click', function(e) {
-  dbConnection.profileLinkRedirect()
+searchForm.addEventListener('submit', function(e) {
+  let input = document.getElementById('search-input').value
+  if(!input) {
+    e.preventDefault();
+    alert('enter the beggining of book name')
+  }
 })
 
 document.addEventListener("click", function (e) {
 
-  if (e.target.id === 'signUp-button') {
-    signUpPopup.classList.add("visible");
-  };
 
+  // listeners for pop-ups - registration/logging in
+  if (e.target.id === "signUp-button") {
+    signUpPopup.classList.add("visible");
+  }
 
   if (e.target.id == "signup-popup" || e.target.id == "signin-popup") {
     signUpPopup.classList.remove("visible");
     signInPopup.classList.remove("visible");
-  };
+  }
 
   if (e.target.id == "popup-close") {
     signUpPopup.classList.remove("visible");
-  };
+  }
   if (e.target.id == "form-sign-in-button") {
     signUpPopup.classList.remove("visible");
-  signInPopup.classList.add("visible");
-  };
+    signInPopup.classList.add("visible");
+  }
   if (e.target.id == "signIn-button") {
     signInPopup.classList.add("visible");
-  };
+  }
   if (e.target.id == "sign-in-popup-close-button") {
     signInPopup.classList.remove("visible");
-  };
+  }
   if (e.target.id == "form-sign-up-button") {
     signInPopup.classList.remove("visible");
     signUpPopup.classList.add("visible");
-  };
+  }
+  // REGISTRATION
+  if (e.target.id == "signUp-submit-button") {
+    e.preventDefault();
+    userData.name = `${signUpFirstName.value} ${signUpLastName.value}`;
+    userData.email = signUpEmail.value;
+    userData.password = signUpPassword.value;
+    userData.role = 1;
+    console.log(userData);
 
+    dbConnection.signUp(userData);
+  }
+  //burger menu open/close
+  if (e.target.id == "burger-button") {
+    e.preventDefault();
+    burgerMenu.style.left === "-15px"
+      ? (burgerMenu.style.left = "-104vw")
+      : (burgerMenu.style.left = "-15px");
+  }
+  //LOGGING IN
+  // redirection to different pages according to user`s status
+  if (e.target.id == "signIn-submit-button") {
+    e.preventDefault();
+    dbConnection.signIn(signInEmail.value, signInPassword.value);
+  }
+  //on click on profile - redirecting according to user`s role or alert if noy logged in
+  if (e.target.id == "profile-link") {
+    e.preventDefault();
+    dbConnection.profileLinkRedirect();
+  }
+  //on log-out button click - clearing active user Store and redirect to home.html
+  if (e.target.id === "log-out-button") {
+    dbConnection.clearActiveUserStore();
+    location.href = "/";
+  }
+  //For User Page - to take book to read
+  if (e.target.dataset.class === "take-book-to-read-btn") {
+    let bookName = e.target.dataset.id;
+    dbConnection.addBookToTheOrderList(bookName);
+  }
+  //for user page - return book
+  if (e.target.dataset.class === "return-book-btn") {
+    let bookName = e.target.dataset.id;
+    dbConnection.returnBook(bookName);
+  }
 });
 
-
-
-
-
-burgerButton.addEventListener("click", function (e) {
-  // burgerMenu.classList.add('visible')
-  burgerMenu.style.left === "-15px"
-    ? (burgerMenu.style.left = "-104vw")
-    : (burgerMenu.style.left = "-15px");
+document.querySelectorAll(".accordBtn").forEach((el) => {
+  el.addEventListener("click", function (e) {
+    e.preventDefault();
+    let content = this.nextElementSibling;
+    if (content.style.maxHeight) {
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
 });
 
 document.addEventListener("scroll", function (e) {
-  // burgerMenu.classList.remove('visible')
-  burgerMenu.style.left === "-15px" ? (burgerMenu.style.left = "-100vw") : true;
+  burgerMenu.style.left === "-15px" ? (burgerMenu.style.left = "-104vw") : true;
 });
-
-/**
- * REGISTRATION
- */
-signUpSubmitButton.addEventListener("click", function (e) {
-  e.preventDefault();
-  userData.name = `${signUpFirstName.value} ${signUpLastName.value}`;
-  userData.email = signUpEmail.value;
-  userData.password = signUpPassword.value;
-  userData.role = 1;
-  console.log(userData);
-
-  dbConnection.signUp(userData);
-});
-
-/**
- * LOGGING IN
- * redirection to different pages according to user`s status
- */
-signInSubmitButton.addEventListener("click", function (e) {
-  e.preventDefault();
-dbConnection.signIn(signInEmail.value, signInPassword.value)
-});
-
-/**
- * Logging out
- */
 

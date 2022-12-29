@@ -92,8 +92,8 @@
               </ul>
             </nav>
           </div>
-          <button id="burger-button">
-            <img src="img/burger-menu-icon.png" alt="" />
+          <button>
+            <img id="burger-button" src="img/burger-menu-icon.png" alt="" />
           </button>
         </div>
         <nav class="header-navigation">
@@ -108,10 +108,12 @@
     <main class="main">
       <div class="content">
         <div class="search">
-          <form action="">
-            <div><input type="text" /></div>
-            <button id="search-button" type="submit">
-              <img src="img/search-icon.png" alt="" />
+          <form id="search-form"  action="search.html" method="get">
+            <div>
+              <input id="search-input"  type="text" name="request"/>
+            </div>
+            <button type="submit">
+              <img id="search-button" src="img/search-icon.png" alt="" />
             </button>
           </form>
         </div>
@@ -169,7 +171,7 @@
                   <input
                     type="text"
                     id="input-book-amount"
-                    placeholder="Available cout"
+                    placeholder="Total cout"
                   />
                 </div>
                 <div>
@@ -195,11 +197,18 @@
               <form action="" class="delete-book-form">
                 <div>Enter exact book name</div>
                 <div>
-                  <input type="text" id="deleteBookNameInput" placeholder="Book name">
+                  <input
+                    type="text"
+                    id="deleteBookNameInput"
+                    placeholder="Book name"
+                  />
                 </div>
                 <div>
-                  <button type="submit" id="deleteSubmitButton">Delete book</button>
+                  <button type="submit" id="deleteSubmitButton">
+                    Delete book
+                  </button>
                 </div>
+              </form>
             </div>
           </div>
         </div>
@@ -207,7 +216,10 @@
         <div class="books-list">
           <button class="accordBtn" data-id="accordBTn">List of orders</button>
           <div class="catalogue-wrapper slider">
-            <div class="catalogue-wrapper-content list-of-orders-content"  id="list-of-orders">
+            <div
+              class="catalogue-wrapper-content list-of-orders-content"
+              id="list-of-orders"
+            >
               <!-- <div class="item-content">
                 <h4>Person: Artem Semenov</h4>
                 <p>Ordered books:</p>
@@ -224,7 +236,7 @@
           <button class="accordBtn" data-id="accordBTn">
             List of outdated orders
           </button>
-          <div class="catalogue-wrapper slider">
+          <div class="catalogue-wrapper slider mb-15">
             <div class="catalogue-wrapper-content">
               <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -247,7 +259,7 @@
       </div>
     </footer>
     <script src="IndexedDB.js"></script>
-    <script src="user.js"></script>
+    <script src="app.js"></script>
     <script src="admin.js"></script>
   </body>
 </html>

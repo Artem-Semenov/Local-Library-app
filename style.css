@@ -245,6 +245,7 @@ gap: 10px;
 }
 .book-wrapper > button {
 position: absolute;
+line-height: 42px;
 bottom: 10px;
 right: 10px;
 background: #0B0E61;
@@ -273,4 +274,31 @@ padding-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
+}
+.mb-15 {
+margin-bottom: 15px;
+}
+
+.row-spc-btw {
+  display: flex;
+  gap: 20px;
+}
+
+.search-results > h4 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.search-results > p {
+  font-size: 15px;
+  font-weight: 400;
+  font-style: italic;
+}
+.search-results-content {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

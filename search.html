@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Itim&family=Lexend:wght@300&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="user.css" />
     <link rel="stylesheet" href="style.css" />
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-    <title>Library</title>
+    <title>User</title>
   </head>
   <body>
     <div class="signUp-popup" id="signup-popup">
@@ -23,7 +23,7 @@
         </div>
         <h3>Signup</h3>
         <p>Signup to gain access to our exclusive library resources.</p>
-        <form action="">
+        <form action="" method="post">
           <div class="row-spc-btw">
             <div>
               <div>First Name</div>
@@ -65,7 +65,7 @@
         </div>
         <h3>Signin</h3>
         <p>Signin to gain access to our exclusive library resources.</p>
-        <form action="">
+        <form action="" method="post">
           <div>
             <div>Email</div>
             <input type="text" id="sign-in-email" />
@@ -97,9 +97,8 @@
         </div>
         <nav class="header-navigation">
           <ul>
-            <!--   <li><button id="log-out-button">Log Out</button></li>
-            <li><button id="signUp-button">Signup</button></li>
-            <li><button id="signIn-button">Signin</button></li> -->
+            <!--  <li><button id="signUp-button">Signup</button></li>
+          <li><button id="signIn-button">Signin</button></li> -->
             <li><button id="contact-button">Contact</button></li>
           </ul>
         </nav>
@@ -108,27 +107,36 @@
     <main class="main">
       <div class="content">
         <div class="search">
-          <form id="search-form" action="search.html" method="get">
+          <form id="search-form" action="">
             <div>
-              <input id="search-input" type="text" name="request"/>
+              <input id="search-input" type="text" name="request" />
             </div>
             <button type="submit">
               <img id="search-button" src="img/search-icon.png" alt="" />
             </button>
           </form>
         </div>
-        <div class="books-preview">
-          <h1>Over 1,000 books</h1>
-          <div class="slider"></div>
+        
+      <div class="search-results">
+        <h4>Search results for the request:</h4>
+        <p id="search-results-lable"></p>
+        <div class="search-results-content">
+          <!-- <p>Unfortunately nothing was found!</p> -->
+        <!--   <div class="book-wrapper">
+                <button>Take to read</button>
+                <img src="img/book-photo-1.png" alt="book" />
+                <div>
+                  <h3>Sherlock Holmes</h3>
+                  <h4>Author</h4>
+                  <p>
+                    A young private invsetigator who must uncover the mystery
+                    behind sudden disappearances.
+                  </p>
+                </div>
+              </div> -->
         </div>
-        <div class="information">
-          <p>
-            Registered members can now access our books online and reserve
-            before coming to the library
-          </p>
-          <p>All books must be returned within 30 day in perfect conditon.</p>
-        </div>
-        <div class="selected-book-preview"></div>
+      </div>
+        
       </div>
     </main>
 

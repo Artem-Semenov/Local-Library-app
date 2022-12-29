@@ -23,24 +23,24 @@
         </div>
         <h3>Signup</h3>
         <p>Signup to gain access to our exclusive library resources.</p>
-        <form action="">
+        <form action="" method="post">
           <div class="row-spc-btw">
             <div>
               <div>First Name</div>
-              <input type="text" id="sign-up-first-name"/>
+              <input type="text" id="sign-up-first-name" />
             </div>
             <div>
               <div>Last Name</div>
-              <input type="text" id="sign-up-last-name"/>
+              <input type="text" id="sign-up-last-name" />
             </div>
           </div>
           <div>
             <div>Email</div>
-            <input type="text" id="sign-up-email"/>
+            <input type="text" id="sign-up-email" />
           </div>
           <div>
             <div>Password</div>
-            <input type="password" id="sign-up-password"/>
+            <input type="password" id="sign-up-password" />
           </div>
           <div>
             <div>Re-enter Password</div>
@@ -65,17 +65,17 @@
         </div>
         <h3>Signin</h3>
         <p>Signin to gain access to our exclusive library resources.</p>
-        <form action="">
+        <form action="" method="post">
           <div>
             <div>Email</div>
-            <input type="text" id="sign-in-email"/>
+            <input type="text" id="sign-in-email" />
           </div>
           <div>
             <div>Password</div>
-            <input type="password" id="sign-in-password"/>
+            <input type="password" id="sign-in-password" />
           </div>
           <div>
-            <button type="submit"  id="signIn-submit-button">Submit</button>
+            <button type="submit" id="signIn-submit-button">Submit</button>
           </div>
         </form>
       </div>
@@ -91,8 +91,8 @@
               </ul>
             </nav>
           </div>
-          <button id="burger-button">
-            <img src="img/burger-menu-icon.png" alt="" />
+          <button>
+            <img id="burger-button" src="img/burger-menu-icon.png" alt="" />
           </button>
         </div>
         <nav class="header-navigation">
@@ -106,18 +106,20 @@
     </header>
     <main class="main">
       <div class="content">
-         <div class="search">
-          <form action="">
-            <div><input type="text" /></div>
-            <button id="search-button" type="submit">
-              <img src="img/search-icon.png" alt="" />
+        <div class="search">
+          <form id="search-form"  action="search.html" method="get">
+            <div>
+              <input id="search-input" type="text" name="request" />
+            </div>
+            <button type="submit">
+              <img id="search-button" src="img/search-icon.png" alt="" />
             </button>
           </form>
         </div>
         <div class="user-info" id="user-info-block">
           <div class="photo">photo</div>
           <div class="text-content" id="user-info-text">
-           <!--  <div>user</div>
+            <!--  <div>user</div>
             <p>Artem Semenov</p>
             <p>artem.semenov.101@gmail.com</p> -->
           </div>
@@ -125,19 +127,18 @@
         <div class="books-list">
           <button class="accordBtn">Catalogue of books</button>
           <div class="catalogue-wrapper slider" id="catalogue-wrapper">
-            <div class="catalogue-wrapper-content" id="catalogue-content">
-              
-            </div>
+            <div class="catalogue-wrapper-content" id="catalogue-content"></div>
           </div>
         </div>
         <div class="books-list">
           <button class="accordBtn">Ordered books list</button>
-          <div class="catalogue-wrapper slider" id="catalogue-ordered-wrapper">
-            <div class="catalogue-wrapper-content" id="list-of-orders">
-             
-            </div>
+          <div
+            class="catalogue-wrapper slider mb-15"
+            id="catalogue-ordered-wrapper"
+          >
+            <div class="catalogue-wrapper-content" id="list-of-orders"></div>
           </div>
-        </div> 
+        </div>
       </div>
     </main>
 
@@ -150,6 +151,6 @@
       </div>
     </footer>
     <script src="IndexedDB.js"></script>
-    <script src="user.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>
