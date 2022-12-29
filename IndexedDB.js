@@ -150,7 +150,7 @@ class DBconnection {
         this.bookData = this.getRequest.result;
         delete this.bookData.id;
         if (this.bookData.availableCount <= 0) {
-          alert('Error! This books finished!')
+          alert("Error! This books finished!");
           return false;
         }
         delete this.bookData.availableCount;
@@ -556,7 +556,9 @@ class DBconnection {
         }' data-class='take-book-to-read-btn'>Take to read</button>
         <img src="${randomPhoto()}" alt="book" />
         <div>
-          <p>Available ${this.bookName.availableCount}/${this.bookName.totalCount}</p>
+          <p>Available ${this.bookName.availableCount}/${
+              this.bookName.totalCount
+            }</p>
           <h3>${this.bookName.name}</h3>
           <h4>${this.bookName.author}</h4>
           <p>
@@ -676,7 +678,6 @@ class DBconnection {
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
         this.activeUser = this.getRequest.result[0].name;
-
         this.transaction = this.db.transaction("orders", "readwrite");
         this.storeName = this.transaction.objectStore("orders");
         this.index = this.storeName.index("orderedBy");
@@ -691,11 +692,21 @@ class DBconnection {
           this.deleteRequest = this.storeName.delete(this.idToDelete);
           this.deleteRequest.onerror = this.onError;
           this.deleteRequest.onsuccess = () => {
-            alert("Book was successfullt deleted from your orders");
-            location.reload();
-          };
-          this.deleteRequest.onerror = () => {
-            alert("Problem with deleting! Try later");
+            this.transaction = this.db.transaction("books", "readwrite");
+            this.storeName = this.transaction.objectStore("books");
+            this.index = this.storeName.index("name");
+            this.getRequest = this.index.get(this.bookName);
+            this.getRequest.onerror = this.onError;
+            this.getRequest.onsuccess = () => {
+              this.bookData = this.getRequest.result;
+              this.bookData.availableCount += 1;
+              this.changeRequest = this.storeName.put(this.bookData);
+              this.changeRequest.onerror = this.onError;
+              this.changeRequest.onsuccess = () => {
+                alert("Book was successfully deleted from your orders");
+                location.reload();
+              };
+            };
           };
         };
       };
