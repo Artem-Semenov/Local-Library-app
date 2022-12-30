@@ -49,16 +49,26 @@ request.onupgradeneeded = function(e) {
 
  */
 
-if (location.pathname === "/") {
-  dbConnection.checkActiveUser();
-} else if (location.pathname === '/user.html' 
-|| location.pathname ==='/admin.html'){
-  dbConnection.ativeUserProfileRender();
-};
 
-if(location.pathname === '/search.html') {
-  dbConnection.renderSearchResults(window.location.search.slice(window.location.search.indexOf('=') + 1)
-  .split('+').join(' ').trim())
+if (document.URL.includes("index.html") || location.pathname === "/") {
+  dbConnection.checkActiveUser();
+} else if (
+  document.URL.includes("user.html") ||
+  document.URL.includes("admin.html") ||
+  location.pathname === "/user.html" ||
+  location.pathname === "/admin.html"
+) {
+  dbConnection.ativeUserProfileRender();
+}
+
+if (location.pathname === "/search.html") {
+  dbConnection.renderSearchResults(
+    window.location.search
+      .slice(window.location.search.indexOf("=") + 1)
+      .split("+")
+      .join(" ")
+      .trim()
+  );
 }
 
 const signUpPopup = document.getElementById("signup-popup");
@@ -76,19 +86,17 @@ const signUpPassword = document.getElementById("sign-up-password");
 const signInEmail = document.getElementById("sign-in-email");
 const signInPassword = document.getElementById("sign-in-password");
 
-const searchForm = document.getElementById('search-form');
+const searchForm = document.getElementById("search-form");
 
-searchForm.addEventListener('submit', function(e) {
-  let input = document.getElementById('search-input').value
-  if(!input) {
+searchForm.addEventListener("submit", function (e) {
+  let input = document.getElementById("search-input").value;
+  if (!input) {
     e.preventDefault();
-    alert('enter the beggining of book name')
+    alert("enter the beggining of book name");
   }
-})
+});
 
 document.addEventListener("click", function (e) {
-
-
   // listeners for pop-ups - registration/logging in
   if (e.target.id === "signUp-button") {
     signUpPopup.classList.add("visible");
@@ -123,8 +131,6 @@ document.addEventListener("click", function (e) {
     userData.email = signUpEmail.value;
     userData.password = signUpPassword.value;
     userData.role = 1;
-    console.log(userData);
-
     dbConnection.signUp(userData);
   }
   //burger menu open/close
@@ -148,7 +154,7 @@ document.addEventListener("click", function (e) {
   //on log-out button click - clearing active user Store and redirect to home.html
   if (e.target.id === "log-out-button") {
     dbConnection.clearActiveUserStore();
-    location.href = "/";
+    location.href = "index.html";
   }
   //For User Page - to take book to read
   if (e.target.dataset.class === "take-book-to-read-btn") {
@@ -177,4 +183,3 @@ document.querySelectorAll(".accordBtn").forEach((el) => {
 document.addEventListener("scroll", function (e) {
   burgerMenu.style.left === "-15px" ? (burgerMenu.style.left = "-104vw") : true;
 });
-

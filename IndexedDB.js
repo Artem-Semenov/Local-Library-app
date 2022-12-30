@@ -1,15 +1,15 @@
 const DB_NAME = "library";
-const DB_VERSION = 7;
+const DB_VERSION = 1;
 
 class DBconnection {
   constructor() {}
-  /*   db = null;
+  db = null;
   callbackFn;
   openRequest = null;
   transaction;
   storeName;
   request = null;
-  role = null; */
+  role = null; //1 - user, 101 - admin
 
   open(callbackFn) {
     this.callbackFn = callbackFn;
@@ -64,6 +64,35 @@ class DBconnection {
     console.log("onError", e);
   };
 
+  initialize = () => {
+     this.adminData = {
+      name: "Administrator",
+      role: 101,
+      email: "admin@gmail.com",
+      password: "admin",
+    }; 
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("users", 'readwrite');
+      this.storeName = this.transaction.objectStore("users");
+      this.getRequest = this.storeName.getAll();
+      console.log(this.getRequest);
+      this.getRequest.onsuccess = () => {
+        console.log(this.getRequest.result);
+        console.log(this.getRequest.result.length);
+         if (this.getRequest.result.length < 1) {
+          this.addRequest = this.storeName.add(this.adminData);
+          alert('application initialized. You can sign in as admin using email: admin@gmail.com, password: admin')
+        } 
+      };
+      this.getRequest.onerror = () => {
+        console.log(e);
+        alert("error with initializing app, check indexedDB");
+      };
+    };
+  };
   /**
    * METHODS TO ADD OBJECTS TO STORE
    * 1 - used to add books to the store
@@ -103,7 +132,6 @@ class DBconnection {
     this.request.onsuccess = () => {
       this.transaction = this.db.transaction("users", "readwrite");
       this.storeName = this.transaction.objectStore("users");
-      console.log(this.data);
       this.addRequest = this.storeName.add(this.data);
       this.addRequest.onsuccess = () => {
         console.log("Registration successfull! Now you can sign in");
@@ -111,7 +139,7 @@ class DBconnection {
         signUpPopup.classList.remove("visible");
         signInPopup.classList.add("visible");
       };
-      this.addRequest.onerror = () => {
+      this.addRequest.onerror = (e) => {
         console.log("error with adding item to store", e.target);
         alert("Error! This email is already used. Try another one.");
       };
@@ -128,6 +156,7 @@ class DBconnection {
       this.transaction = this.db.transaction("activeUser", "readwrite");
       this.storeName = this.transaction.objectStore("activeUser");
       this.addRequest = this.storeName.add(this.data);
+      this.addRequest = this.onError;
       this.addRequest.onsuccess = () => {
         console.log("active user successfully updated");
       };
@@ -141,26 +170,40 @@ class DBconnection {
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
+      //finding data of a book in books store
       this.transaction = this.db.transaction("books");
       this.storeName = this.transaction.objectStore("books");
       this.index = this.storeName.index("name");
       this.getRequest = this.index.get(name);
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
+        //deleting her id because in orders we have other id`s
         this.bookData = this.getRequest.result;
         delete this.bookData.id;
+        //checking if there at lest 1 book available
         if (this.bookData.availableCount <= 0) {
           alert("Error! This books finished!");
           return false;
         }
+        //before adding to orders - deleting from props counts
+        //cause we dont need this information in orders store
         delete this.bookData.availableCount;
         delete this.bookData.totalCount;
+        //adding date prop to order - from - to(30 days)
+        this.date = new Date();
+        this.bookData.dateFrom = new Date();
+        this.bookData.dateTo = new Date(
+          this.date.setDate(this.date.getDate() + 30)
+        );
+        //getting info about active User to fulfill prop 'orderedBy'
+        //in order
         this.transaction = this.db.transaction("activeUser");
         this.storeName = this.transaction.objectStore("activeUser");
         this.getRequest = this.storeName.getAll();
         this.getRequest.onerror = this.onError;
         this.getRequest.onsuccess = () => {
-          this.bookData.orderedBy = this.getRequest.result[0].name;
+          //adding object to orders Store
+          this.bookData.orderedBy = this.getRequest.result[0].email;
           this.transaction = this.db.transaction("orders", "readwrite");
           this.storeName = this.transaction.objectStore("orders");
           this.addRequest = this.storeName.add(this.bookData);
@@ -169,7 +212,7 @@ class DBconnection {
           };
           this.addRequest.onsuccess = () => {
             alert("book ordered!");
-
+            //getting info about book from books store and changing available count prop at at -= 1;
             this.transaction = this.db.transaction("books", "readwrite");
             this.storeName = this.transaction.objectStore("books");
             this.index = this.storeName.index("name");
@@ -194,8 +237,12 @@ class DBconnection {
    * 1 - used by user to view list of available books
    * 2 - used by admin to get list of orders
    * 3 - used while logging in to approve account
-   * 4 - check active user
+   * 4 - check active user to render UI elements
    * 5 - to render elements of user`s profile
+   * 6 - check active user to redirect to appropriate page
+   * 7 - search
+   * 8 - render search results on search.html
+   * 9 - render list of outdated orders
    */
 
   // 1 - render list of available books, in the end calling method to render ordersList
@@ -239,7 +286,7 @@ class DBconnection {
   };
 
   // 2-  render list of orders for - for user list of personal orders
-  // for admin - list of all orders
+  // for admin - list of all orders, then calling method to render list of outdated orders
 
   renderListOfOrders = () => {
     this.activeUser = null;
@@ -248,17 +295,20 @@ class DBconnection {
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
+      //recognize active user
       this.transaction = this.db.transaction("activeUser");
       this.storeName = this.transaction.objectStore("activeUser");
       this.getRequest = this.storeName.getAll();
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
-        this.activeUser = this.getRequest.result[0].name;
+        this.activeUser = this.getRequest.result[0].email;
         this.activeUserRole = this.getRequest.result[0].role;
+        //depending on role - rendering different lists of orders
         if (this.activeUserRole === 1) {
           this.transaction = this.db.transaction("orders");
           this.storeName = this.transaction.objectStore("orders");
           this.index = this.storeName.index("orderedBy");
+          //all ordered by THIS USER
           this.getRequest = this.index.getAll(this.activeUser);
 
           this.getRequest.onsuccess = () => {
@@ -276,6 +326,13 @@ class DBconnection {
             <p>
               ${el.description}
             </p>
+            <p>book was taken on ${el.dateFrom.getDate()}.${
+                el.dateFrom.getMonth() + 1
+              }.${el.dateFrom.getFullYear()}\n
+            It should be returned within ${
+              (el.dateTo - el.dateFrom) / (1000 * 60 * 60 * 24)
+            } days
+            </p>
           </div>
         </div>
               `;
@@ -291,6 +348,7 @@ class DBconnection {
           this.getRequest = this.storeName.getAll();
           this.getRequest.onerror = this.onError;
           this.getRequest.onsuccess = () => {
+            //ALL ORDERS
             let result = this.getRequest.result;
             //finding names of those who made orders
             let orderedByArr = Array.from(
@@ -300,17 +358,20 @@ class DBconnection {
             //making array with objects(who ordered, [what ordered, quantity])
             let orders = orderedByArr.map((el) => {
               return {
-                orderedBy: el,
-                orders: result
-                  .filter((elem) => elem.orderedBy === el)
+                orderedBy: el, //first prop is person`s name
+                orders: result //second prop: object
+                  .filter((elem) => elem.orderedBy === el) //arr with orders of this person(el) =>
                   .reduce((acc, el) => {
-                    acc[el.name] = (acc[el.name] || 0) + 1;
+                    //returning object with prop
+                    acc[el.name] = (acc[el.name] || 0) + 1; //ordered Book Name : amount
                     return acc;
                   }, {}),
               };
             });
-            // console.log(orders);
+            //creating html-element to render on a page
             let item;
+            //on each iteration(each person) we do cycle on her(his) orders
+            //and forming list of orders
             orders.forEach((el) => {
               let htmlList = "";
               Object.keys(el.orders).forEach((elem) => {
@@ -319,7 +380,7 @@ class DBconnection {
             <li>${elem} - ${el.orders[elem]} pcs.</li>
             `;
               });
-
+              //then adding this list to the html-element
               item = `
             <div class="item-content">
                   <h4>Person: ${el.orderedBy}</h4>
@@ -328,12 +389,13 @@ class DBconnection {
                     ${htmlList}
                   </ul>
                 </div>
-            `;
+             `;
+              //which is going to be inserted in particular place
               document
                 .getElementById("list-of-orders")
                 .insertAdjacentHTML("beforeend", item);
             });
-
+            this.renderListOfOutdatedOrders();
             /*   let uniqueTest = {}
           orders[1].orders.forEach(el => {
           
@@ -368,7 +430,7 @@ class DBconnection {
           if (currentUserData.password === this.password) {
             //delete all from the activeUser store
             this.clearActiveUserStore();
-            // add current user to this store
+            // add current user to active user store
             this.addActiveUser(currentUserData);
             alert("Login successful! You will be redirected to your profile");
             if (this.getRequest.result.role === 101) {
@@ -435,7 +497,9 @@ class DBconnection {
       this.getRequest.onsuccess = () => {
         if (
           this.getRequest.result.length === 1 &&
-          (location.pathname === "/user.html" ||
+          (document.URL.includes("user.html") ||
+          document.URL.includes("admin.html") ||
+            location.pathname === "/user.html" ||
             location.pathname === "/admin.html")
         ) {
           // render users info(name, email, role)
@@ -451,17 +515,6 @@ class DBconnection {
           document.querySelector(".header-navigation > ul").innerHTML = `
             <li><button id="log-out-button">Log out</button></li>
             <li><button id="contact-button">Contact</button></li>`;
-
-          // if it is regular user
-          /*   if (this.getRequest.result[0].role === 1) {
-            //render list of ordered books
-          }
-
-          //if it is an admin
-          else if (this.getRequest.result[0].role === 101) {
-            //render list of all orders
-            //render list of outdated orders
-          } */
         } else {
           let html = "Please log in to get access to all features";
 
@@ -480,7 +533,7 @@ class DBconnection {
     };
   };
 
-  //on click on profile link - checking if user logged in. If yes - redirecting
+  // 6 - on click on profile link - checking if user logged in. If yes - redirecting
   //to admin.html or user.html according to the logged user`s role;
   //If not logged - alert
   profileLinkRedirect = () => {
@@ -503,8 +556,10 @@ class DBconnection {
     };
   };
 
-  // search
-
+  // 7 - search
+  //we submitting search request in adress line via 'get' method
+  //then getting request from adress line on search page and run
+  //renderSearchResults() method
   search = (input) => {
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
     this.request.onerror = this.onError;
@@ -525,7 +580,8 @@ class DBconnection {
       };
     };
   };
-
+  // 8 - render search results
+  //we get input from address line submitted via form from another page(index, user or admin)
   renderSearchResults = (input) => {
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
     this.request.onerror = this.onError;
@@ -587,9 +643,49 @@ class DBconnection {
       };
     };
   };
-  /*   renderSearchResults = (input) => {
-    this.
-  } */
+  // 9 - render outdated orders
+  renderListOfOutdatedOrders = () => {
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("orders");
+      this.storeName = this.transaction.objectStore("orders");
+      this.getRequest = this.storeName.getAll();
+      this.getRequest.onerror = this.onError;
+      this.getRequest.onsuccess = () => {
+        this.result = this.getRequest.result;
+        this.date = new Date();
+        this.result.forEach((el) => {
+          if (
+            Math.floor((el.dateTo - this.date) / (1000 * 60 * 60 * 24)) <= 0
+          ) {
+            let item = `
+          <div class="item-content">
+            <h4>Person: ${el.orderedBy}</h4>
+            <p>Book: ${el.name}</p>
+            <p style='color: red;'>Overdue: ${Math.abs(
+              Math.floor((el.dateTo - this.date) / (1000 * 60 * 60 * 24))
+            )} days</p>
+          </div>
+     `;
+            document
+              .getElementById("outDated-orders-content")
+              .insertAdjacentHTML("beforeend", item);
+          }
+        });
+        if (
+          document
+            .getElementById("outDated-orders-content")
+            .textContent.trim() === ""
+        ) {
+          document.getElementById("outDated-orders-content").innerHTML = `
+          <p>No outdated orders yet</p>
+          `;
+        }
+      };
+    };
+  };
   /**
    * METHODS TO DELETE ITEMS FROM THE STORES
    * 1 - used by admin to delete users
@@ -599,24 +695,6 @@ class DBconnection {
    * 5 - to log out
    */
 
-  ///5 - clear active user store
-  clearActiveUserStore = () => {
-    this.request = indexedDB.open(DB_NAME, DB_VERSION);
-    this.request.onerror = this.onError;
-    this.request.onsuccess = (e) => {
-      this.db = e.target.result;
-      this.transaction = this.db.transaction("activeUser", "readwrite");
-      this.storeName = this.transaction.objectStore("activeUser");
-      this.deleteRequest = this.storeName.clear();
-      this.deleteRequest.onsuccess = () => {
-        console.log("Active user successfully cleared");
-      };
-      this.deleteRequest.onerror = () => {
-        console.log("Error with clearing active user");
-      };
-    };
-  };
-
   //2 - delete book from library - for admin
 
   deleteBookFromLibrary = (bookName) => {
@@ -625,6 +703,7 @@ class DBconnection {
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
+      //getting primary key(id) of book from index 'name' of book
       this.transaction = this.db.transaction("books", "readwrite");
       this.storeName = this.transaction.objectStore("books");
       this.index = this.storeName.index("name");
@@ -633,12 +712,14 @@ class DBconnection {
       this.getRequest.onsuccess = () => {
         this.bookId = this.getRequest.result;
         try {
+          //deleting this book
           this.deleteRequest = this.storeName.delete(this.bookId);
           this.deleteRequest.onError = this.onError;
           this.deleteRequest.onsuccess = () => {
             this.transaction = this.db.transaction("orders", "readwrite");
             this.storeName = this.transaction.objectStore("orders");
             this.index = this.storeName.index("name");
+            //then - deleting all orders of this book from orders store
             this.getRequest = this.index.getAllKeys(this.name);
             console.log(this.name);
             this.getRequest.onerror = this.onError;
@@ -657,13 +738,14 @@ class DBconnection {
             };
           };
         } catch {
+          //error throwed if here is no inputed book name in book store
           alert("here is no such book");
         }
       };
     };
   };
 
-  //4 - return book to the library(delete from the orders) - for user(and admin)
+  //4 - return book to the library(delete from the orders) - for user
 
   returnBook = (bookName) => {
     this.bookName = bookName;
@@ -672,12 +754,14 @@ class DBconnection {
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
+      //recongnize active user
       this.transaction = this.db.transaction("activeUser");
       this.storeName = this.transaction.objectStore("activeUser");
       this.getRequest = this.storeName.getAll();
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
         this.activeUser = this.getRequest.result[0].name;
+        // then search in orders what did this user order
         this.transaction = this.db.transaction("orders", "readwrite");
         this.storeName = this.transaction.objectStore("orders");
         this.index = this.storeName.index("orderedBy");
@@ -685,13 +769,16 @@ class DBconnection {
         this.getRequest.onerror = this.onError;
         this.getRequest.onsuccess = () => {
           this.getRequest.result.forEach((el) => {
+            //determine id of order in orders
             if (el.name === this.bookName) {
               this.idToDelete = el.id;
             }
           });
+          //delete this order
           this.deleteRequest = this.storeName.delete(this.idToDelete);
           this.deleteRequest.onerror = this.onError;
           this.deleteRequest.onsuccess = () => {
+            //find id of this book in books
             this.transaction = this.db.transaction("books", "readwrite");
             this.storeName = this.transaction.objectStore("books");
             this.index = this.storeName.index("name");
@@ -699,6 +786,8 @@ class DBconnection {
             this.getRequest.onerror = this.onError;
             this.getRequest.onsuccess = () => {
               this.bookData = this.getRequest.result;
+              //change available count property + 1
+              //and change this book`s data in books store
               this.bookData.availableCount += 1;
               this.changeRequest = this.storeName.put(this.bookData);
               this.changeRequest.onerror = this.onError;
@@ -709,6 +798,23 @@ class DBconnection {
             };
           };
         };
+      };
+    };
+  };
+  ///5 - Log out - clear active user store
+  clearActiveUserStore = () => {
+    this.request = indexedDB.open(DB_NAME, DB_VERSION);
+    this.request.onerror = this.onError;
+    this.request.onsuccess = (e) => {
+      this.db = e.target.result;
+      this.transaction = this.db.transaction("activeUser", "readwrite");
+      this.storeName = this.transaction.objectStore("activeUser");
+      this.deleteRequest = this.storeName.clear();
+      this.deleteRequest.onsuccess = () => {
+        console.log("Active user successfully cleared");
+      };
+      this.deleteRequest.onerror = () => {
+        console.log("Error with clearing active user");
       };
     };
   };
@@ -729,13 +835,10 @@ const userData = {
   role: 101, */
 };
 
-const dbConnection = new DBconnection();
-
-dbConnection.open(() => {
-  console.log("can work");
-});
 
 //pick random photo for book render
+
+
 function randomPhoto() {
   let pick = Math.floor(Math.random() * 4 + 1);
 
@@ -750,3 +853,14 @@ function randomPhoto() {
       return "img/book-photo-4.png";
   }
 }
+const dbConnection = new DBconnection();
+
+dbConnection.open(() => {
+  console.log("can work");
+});
+
+
+//Creating admin account 
+setTimeout(() => {
+  dbConnection.initialize()
+}, 1000)

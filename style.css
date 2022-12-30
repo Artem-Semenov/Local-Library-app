@@ -243,6 +243,12 @@ display: flex;
 align-items: center;
 gap: 10px;
 }
+.book-wrapper > img {
+  width: 116px;
+}
+.book-wrapper > div {
+  padding-bottom: 30px;
+}
 .book-wrapper > button {
 position: absolute;
 line-height: 42px;
@@ -267,7 +273,7 @@ padding-bottom: 20px;
 }
 .books-list.books-catalogue {
   max-height: 600px;
-  overflow: scroll;
+  overflow: auto;
   
 }
 .catalogue-wrapper-content {
