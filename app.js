@@ -49,19 +49,17 @@ request.onupgradeneeded = function(e) {
 
  */
 
-
-if (document.URL.includes("index.html") || location.pathname === "/") {
-  dbConnection.checkActiveUser();
-} else if (
-  document.URL.includes("user.html") ||
-  document.URL.includes("admin.html") ||
-  location.pathname === "/user.html" ||
-  location.pathname === "/admin.html"
+if (
+  document.URL.includes("index") ||
+  location.pathname === "/" ||
+  location.pathname === "/Local-Library-app/"
 ) {
+  dbConnection.checkActiveUser();
+} else if (document.URL.includes("user") || document.URL.includes("admin")) {
   dbConnection.ativeUserProfileRender();
 }
 
-if (location.pathname === "/search.html") {
+if (document.URL.includes("search")) {
   dbConnection.renderSearchResults(
     window.location.search
       .slice(window.location.search.indexOf("=") + 1)
@@ -154,7 +152,7 @@ document.addEventListener("click", function (e) {
   //on log-out button click - clearing active user Store and redirect to home.html
   if (e.target.id === "log-out-button") {
     dbConnection.clearActiveUserStore();
-    location.href = "index.html";
+    location.href = "/";
   }
   //For User Page - to take book to read
   if (e.target.dataset.class === "take-book-to-read-btn") {
