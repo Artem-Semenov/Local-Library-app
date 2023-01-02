@@ -291,6 +291,7 @@ class DBconnection {
   renderListOfOrders = () => {
     this.activeUser = null;
     this.activeUserRole = null;
+    this.today = new Date();
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
@@ -326,11 +327,11 @@ class DBconnection {
             <p>
               ${el.description}
             </p>
-            <p>book was taken on ${el.dateFrom.getDate()}.${
-                el.dateFrom.getMonth() + 1
-              }.${el.dateFrom.getFullYear()}\n
+            <p>book was taken on ${('0'+el.dateFrom.getDate()).slice(-2)}.${
+                ('0'+(el.dateFrom.getMonth() + 1)).slice(-2)
+              }.${el.dateFrom.getFullYear()}
             It should be returned within ${
-              (el.dateTo - el.dateFrom) / (1000 * 60 * 60 * 24)
+              Math.floor((el.dateTo - this.today) / (1000 * 60 * 60 * 24))
             } days
             </p>
           </div>
@@ -760,7 +761,7 @@ class DBconnection {
       this.getRequest = this.storeName.getAll();
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
-        this.activeUser = this.getRequest.result[0].name;
+        this.activeUser = this.getRequest.result[0].email;
         // then search in orders what did this user order
         this.transaction = this.db.transaction("orders", "readwrite");
         this.storeName = this.transaction.objectStore("orders");
@@ -775,6 +776,8 @@ class DBconnection {
             }
           });
           //delete this order
+          console.log(this.getRequest.result);
+          console.log(this.idToDelete);
           this.deleteRequest = this.storeName.delete(this.idToDelete);
           this.deleteRequest.onerror = this.onError;
           this.deleteRequest.onsuccess = () => {
