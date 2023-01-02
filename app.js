@@ -108,7 +108,9 @@ document.addEventListener("click", function (e) {
   //on log-out button click - clearing active user Store and redirect to home.html
   if (e.target.id === "log-out-button") {
     dbConnection.clearActiveUserStore();
-    location.href = "";
+    if(document.URL.includes('artem-semenov')) {
+      location.pathname = '/Local-Library-app/'
+    } else location.href = "/";
   }
   //For User Page - to take book to read
   if (e.target.dataset.class === "take-book-to-read-btn") {
@@ -119,6 +121,11 @@ document.addEventListener("click", function (e) {
   if (e.target.dataset.class === "return-book-btn") {
     let bookName = e.target.dataset.id;
     dbConnection.returnBook(bookName);
+  }
+  if (e.target.id === 'home-link') {
+    if (document.URL.includes('artem-semenov')) {
+     location.pathname = '/Local-Library-app/'
+    } else  location.href = "/";
   }
 });
 
