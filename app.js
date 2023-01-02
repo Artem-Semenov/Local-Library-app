@@ -3,51 +3,7 @@
   photo: '', totalCount: 7, avalCount: 3},
   { id: 3, name: 'Joan Rowling', description: 'This book was written for readers', 
   photo: '', totalCount: 7, avalCount: 3} */
-/* const request = window.indexedDB.open('libraryDB', 1)
 
-request.onerror = function(e) {
-  console.log('error with DB');
-}
-
-request.onupgradeneeded = function(e) {
-  db = e.target.result
-  const users = db.createObjectStore('users', {keyPath: 'ssn'})
-
-  users.createIndex('name', 'name',{unique: false})
-
-  users.createIndex('email', 'email', {unique: true})
-
-  for (let i in customerData) {
-    users.add(customerData[i])
-  }
-  
-  const transaction = db.transaction('readwrite')
-
-
-
-  transaction.oncomplete = function(event) {
-    alert("All done!");
-  };
-  
-  transaction.onerror = function(event) {
-    // Don't forget to handle errors!
-  };
-  
-  const objectStore = transaction.objectStore("users");
-  for (var i in customerData) {
-    var request = objectStore.add(customerData[i]);
-    request.onsuccess = function(event) {
-      // event.target.result == customerData[i].ssn;
-    };
-  }
-  db.transaction("customers").objectStore("customers").get("444-44-4444").onsuccess = function(event) {
-    alert("Name for SSN 444-44-4444 is " + event.target.result.name);
-  };
-  
-}
-
-
- */
 
 if (
   document.URL.includes("index") ||
@@ -152,7 +108,7 @@ document.addEventListener("click", function (e) {
   //on log-out button click - clearing active user Store and redirect to home.html
   if (e.target.id === "log-out-button") {
     dbConnection.clearActiveUserStore();
-    location.href = "/";
+    location.href = "";
   }
   //For User Page - to take book to read
   if (e.target.dataset.class === "take-book-to-read-btn") {
