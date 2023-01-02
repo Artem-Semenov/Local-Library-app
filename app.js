@@ -123,6 +123,7 @@ document.addEventListener("click", function (e) {
     dbConnection.returnBook(bookName);
   }
   if (e.target.id === 'home-link') {
+    e.preventDefault();
     if (document.URL.includes('artem-semenov')) {
      location.pathname = '/Local-Library-app/'
     } else  location.href = "/";
