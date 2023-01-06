@@ -22,6 +22,9 @@ class DBconnection {
   onSuccess = (e) => {
     this.db = e.target.result;
     console.log("onsuccess", e);
+    setTimeout(() => {
+      dbConnection.Initialize();
+    }, 500);
     this.callbackFn();
   };
 
@@ -64,28 +67,58 @@ class DBconnection {
     console.log("onError", e);
   };
 
-  initialize = () => {
-     this.adminData = {
+  Initialize = () => {
+    this.adminData = {
       name: "Administrator",
       role: 101,
       email: "admin@gmail.com",
       password: "admin",
-    }; 
+    };
+    this.booksData = [
+      {
+        name: "Sherlock Holmes",
+        author: "Johan Rowling",
+        description: `A young private invsetigator who must uncover the mystery behind sudden disappearances.`,
+        totalCount: 15,
+        availableCount: 15,
+      },
+      {
+        name: "The Psychology of money",
+        author: "Nocholas Persquizthiey",
+        description: "The fundamental wisom of managing money and personal finance.",
+        totalCount: 10,
+        availableCount: 10,
+      },
+    ];
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
-      this.transaction = this.db.transaction("users", 'readwrite');
+      this.transaction = this.db.transaction("users", "readwrite");
       this.storeName = this.transaction.objectStore("users");
       this.getRequest = this.storeName.getAll();
       console.log(this.getRequest);
       this.getRequest.onsuccess = () => {
         console.log(this.getRequest.result);
         console.log(this.getRequest.result.length);
-         if (this.getRequest.result.length < 1) {
+        if (this.getRequest.result.length < 1) {
           this.addRequest = this.storeName.add(this.adminData);
-          alert('application initialized. You can sign in as admin using email: admin@gmail.com, password: admin')
-        } 
+          this.transaction = this.db.transaction('books', 'readwrite')
+          this.storeName = this.transaction.objectStore('books');
+          this.getRequest = this.storeName.getAll();
+          this.getRequest.onerror = this.onError;
+          this.getRequest.onsuccess = () => {
+            if (this.getRequest.result.length < 1) {
+              this.booksData.forEach(el => {
+                this.addRequest = this.storeName.add(el)
+              })
+             
+            }
+          }
+          alert(
+            "application initialized. You can sign in as admin using email: admin@gmail.com, password: admin"
+          );
+        }
       };
       this.getRequest.onerror = () => {
         console.log(e);
@@ -327,12 +360,13 @@ class DBconnection {
             <p>
               ${el.description}
             </p>
-            <p>book was taken on ${('0'+el.dateFrom.getDate()).slice(-2)}.${
-                ('0'+(el.dateFrom.getMonth() + 1)).slice(-2)
-              }.${el.dateFrom.getFullYear()}
-            It should be returned within ${
-              Math.floor((el.dateTo - this.today) / (1000 * 60 * 60 * 24))
-            } days
+            <p>book was taken on ${("0" + el.dateFrom.getDate()).slice(-2)}.${(
+                "0" +
+                (el.dateFrom.getMonth() + 1)
+              ).slice(-2)}.${el.dateFrom.getFullYear()}
+            It should be returned within ${Math.floor(
+              (el.dateTo - this.today) / (1000 * 60 * 60 * 24)
+            )} days
             </p>
           </div>
         </div>
@@ -499,7 +533,7 @@ class DBconnection {
         if (
           this.getRequest.result.length === 1 &&
           (document.URL.includes("user.html") ||
-          document.URL.includes("admin.html") ||
+            document.URL.includes("admin.html") ||
             location.pathname === "/user.html" ||
             location.pathname === "/admin.html")
         ) {
@@ -596,6 +630,7 @@ class DBconnection {
         if (!input) {
           return false;
         }
+
         document.getElementById("search-input").value = document.getElementById(
           "search-results-lable"
         ).innerHTML = `${input}`;
@@ -838,9 +873,7 @@ const userData = {
   role: 101, */
 };
 
-
 //pick random photo for book render
-
 
 function randomPhoto() {
   let pick = Math.floor(Math.random() * 4 + 1);
@@ -862,8 +895,8 @@ dbConnection.open(() => {
   console.log("can work");
 });
 
-
-//Creating admin account 
-setTimeout(() => {
+//Creating admin account
+// adding 2 books to the store
+/* setTimeout(() => {
   dbConnection.initialize()
-}, 1000)
+}, 1000) */

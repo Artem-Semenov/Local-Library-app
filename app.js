@@ -16,13 +16,13 @@ if (
 }
 
 if (document.URL.includes("search")) {
-  dbConnection.renderSearchResults(
+  dbConnection.renderSearchResults(decodeURIComponent(
     window.location.search
       .slice(window.location.search.indexOf("=") + 1)
       .split("+")
       .join(" ")
       .trim()
-  );
+  ));
 }
 
 const signUpPopup = document.getElementById("signup-popup");
