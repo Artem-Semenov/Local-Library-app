@@ -4,7 +4,7 @@
   { id: 3, name: 'Joan Rowling', description: 'This book was written for readers', 
   photo: '', totalCount: 7, avalCount: 3} */
 
-
+/* 
 if (
   document.URL.includes("index") ||
   location.pathname === "/" ||
@@ -23,7 +23,7 @@ if (document.URL.includes("search")) {
       .join(" ")
       .trim()
   ));
-}
+} */
 
 const signUpPopup = document.getElementById("signup-popup");
 const signInPopup = document.getElementById("signin-popup");
@@ -42,11 +42,14 @@ const signInPassword = document.getElementById("sign-in-password");
 
 const searchForm = document.getElementById("search-form");
 
-searchForm.addEventListener("submit", function (e) {
+searchForm.addEventListener("submit", function (event) {
+  event.preventDefault();
   let input = document.getElementById("search-input").value;
+
   if (!input) {
-    e.preventDefault();
     alert("enter the beggining of book name");
+  } else {
+    dbConnection.search();
   }
 });
 
@@ -108,8 +111,8 @@ document.addEventListener("click", function (e) {
   //on log-out button click - clearing active user Store and redirect to home.html
   if (e.target.id === "log-out-button") {
     dbConnection.clearActiveUserStore();
-    if(document.URL.includes('artem-semenov')) {
-      location.pathname = '/Local-Library-app/'
+    if (document.URL.includes("artem-semenov")) {
+      location.pathname = "/Local-Library-app/";
     } else location.href = "/";
   }
   //For User Page - to take book to read
@@ -122,11 +125,11 @@ document.addEventListener("click", function (e) {
     let bookName = e.target.dataset.id;
     dbConnection.returnBook(bookName);
   }
-  if (e.target.id === 'home-link') {
+  if (e.target.id === "home-link") {
     e.preventDefault();
-    if (document.URL.includes('artem-semenov')) {
-     location.pathname = '/Local-Library-app/'
-    } else  location.href = "/";
+    if (document.URL.includes("artem-semenov")) {
+      location.pathname = "/Local-Library-app/";
+    } else location.href = "/";
   }
 });
 

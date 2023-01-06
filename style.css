@@ -121,7 +121,7 @@ line-height: 42px;
 }
 .slider {
   height: 116px;
-  background-color: bisque;
+  background-color: rgba(247, 228, 205, 0.7);
   border: 1px solid black;
   width: 100%;
 }
@@ -249,7 +249,7 @@ gap: 10px;
 .book-wrapper > div {
   padding-bottom: 30px;
 }
-.book-wrapper > button {
+.catalogue-wrapper-content > .book-wrapper > button, .book-wrapper > button {
 position: absolute;
 line-height: 42px;
 bottom: 10px;
@@ -307,4 +307,122 @@ margin-bottom: 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+
+body {
+  display: flex;
+  flex-direction: column;
+background: rgba(200, 202, 239, 0.56);
+}
+body .content {
+  background: none;
+}
+footer {
+  margin-top: auto;
+}
+.books-list button {
+  text-align: left;
+  font-family: 'Itim';
+font-style: normal;
+font-weight: 400;
+font-size: 35px;
+line-height: 42px;
+color: #0B0E61;
+padding-right: 25px;
+background: url(img/arrow\ down.svg) right 15px no-repeat;
+margin: 15px 0;
+}
+
+.catalogue-wrapper.slider {
+  height: fit-content;
+  border: none;
+  max-height: 0px;
+  overflow: hidden;
+  transition: all ease 0.3s;
+}
+.catalogue-wrapper-content {
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.user-info .photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: gray;
+ width: 73px;
+ height: 73px;
+ border-radius: 70px;
+}
+.user-info .text-content {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: #0B0E61;
+}
+.user-info .text-content :first-child {
+  color: rgba(200, 202, 239, 0.9)
+}
+
+.add-book-form {
+  margin-top: 15px;
+
+}
+
+.add-book-form, .delete-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+.add-book-form  > div,.delete-book-form > div {
+  display: flex;
+  justify-content: center;
+}
+.add-book-form  > div > input, .delete-book-form > div > input {
+  padding: 10px;
+  width: 100%;
+}
+.add-book-form  > div > button {
+  background: rgb(236, 185, 185);
+  padding: 0 15px;
+  font-family: 'Inter';
+  font-size: 30px;
+  font-weight: 700;
+}
+.delete-book-form > div > button {
+  color: blue;
+  background: rgb(255, 83, 83);
+  padding: 0 10px;
+  margin: 0;
+}
+.delete-book-form > div:first-child {
+  margin-right: auto;
+}
+
+.catalogue-wrapper-content.list-of-orders-content .item-content {
+border-radius: 5px;
+border: 1px solid black;
+padding: 10px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.catalogue-wrapper-content.list-of-orders-content .item-content > h4 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.catalogue-wrapper-content.list-of-orders-content .item-content > p {
+font-size: 17px;
+}
+.catalogue-wrapper-content.list-of-orders-content .item-content > ul li{
+list-style: auto;
+margin-left: 20px;
 }

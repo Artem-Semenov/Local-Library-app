@@ -22,9 +22,9 @@ class DBconnection {
   onSuccess = (e) => {
     this.db = e.target.result;
     console.log("onsuccess", e);
-    setTimeout(() => {
-      dbConnection.Initialize();
-    }, 500);
+
+    dbConnection.Initialize();
+
     this.callbackFn();
   };
 
@@ -67,6 +67,10 @@ class DBconnection {
     console.log("onError", e);
   };
 
+  /**
+   * INITIALIZE APP - checking if there anything in users and books stores. If there are nothing -
+   * adding admin profile and 2 books
+   */
   Initialize = () => {
     this.adminData = {
       name: "Administrator",
@@ -85,7 +89,8 @@ class DBconnection {
       {
         name: "The Psychology of money",
         author: "Nocholas Persquizthiey",
-        description: "The fundamental wisom of managing money and personal finance.",
+        description:
+          "The fundamental wisom of managing money and personal finance.",
         totalCount: 10,
         availableCount: 10,
       },
@@ -97,26 +102,48 @@ class DBconnection {
       this.transaction = this.db.transaction("users", "readwrite");
       this.storeName = this.transaction.objectStore("users");
       this.getRequest = this.storeName.getAll();
-      console.log(this.getRequest);
       this.getRequest.onsuccess = () => {
-        console.log(this.getRequest.result);
-        console.log(this.getRequest.result.length);
+        //checking users object store
+        //if nothing there - adding admin and 2 books
         if (this.getRequest.result.length < 1) {
           this.addRequest = this.storeName.add(this.adminData);
-          this.transaction = this.db.transaction('books', 'readwrite')
-          this.storeName = this.transaction.objectStore('books');
+          this.transaction = this.db.transaction("books", "readwrite");
+          this.storeName = this.transaction.objectStore("books");
           this.getRequest = this.storeName.getAll();
           this.getRequest.onerror = this.onError;
           this.getRequest.onsuccess = () => {
             if (this.getRequest.result.length < 1) {
-              this.booksData.forEach(el => {
-                this.addRequest = this.storeName.add(el)
-              })
-             
+              this.booksData.forEach((el) => {
+                this.addRequest = this.storeName.add(el);
+              });
+              alert(
+                "application initialized. You can sign in as admin using email: admin@gmail.com, password: admin"
+              );
             }
-          }
-          alert(
-            "application initialized. You can sign in as admin using email: admin@gmail.com, password: admin"
+          };
+        }
+        //regardless of previous check - calling methods to render UI
+        //for different pages
+        if (
+          document.URL.includes("index") ||
+          location.pathname === "/" ||
+          location.pathname === "/Local-Library-app/"
+        ) {
+          dbConnection.checkActiveUser();
+        } else if (
+          document.URL.includes("user") ||
+          document.URL.includes("admin")
+        ) {
+          dbConnection.ativeUserProfileRender();
+        } else if (document.URL.includes("search")) {
+          dbConnection.renderSearchResults(
+            decodeURIComponent(
+              window.location.search
+                .slice(window.location.search.indexOf("=") + 1)
+                .split("+")
+                .join(" ")
+                .trim()
+            )
           );
         }
       };
@@ -595,7 +622,7 @@ class DBconnection {
   //we submitting search request in adress line via 'get' method
   //then getting request from adress line on search page and run
   //renderSearchResults() method
-  search = (input) => {
+  search = () => {
     this.request = indexedDB.open(DB_NAME, DB_VERSION);
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
@@ -608,9 +635,7 @@ class DBconnection {
         if (this.getRequest.result.length < 1) {
           alert("Please, log in to get access to search");
         } else {
-          if (location.pathname != "/search.html") {
-            location.href = "/search.html";
-          }
+          searchForm.submit();
         }
       };
     };
@@ -622,26 +647,53 @@ class DBconnection {
     this.request.onerror = this.onError;
     this.request.onsuccess = (e) => {
       this.db = e.target.result;
-      this.transaction = this.db.transaction("books");
-      this.storeName = this.transaction.objectStore("books");
-      this.getRequest = this.storeName.openCursor();
+      this.transaction = this.db.transaction("activeUser");
+      this.storeName = this.transaction.objectStore("activeUser");
+      this.getRequest = this.storeName.getAll();
       this.getRequest.onerror = this.onError;
       this.getRequest.onsuccess = () => {
-        if (!input) {
-          return false;
+        if (this.getRequest.result.length === 1) {
+          let html =
+            // <li><button id="log-out-button">Log Out</button></li>
+            `
+        <li class='header-text-colored'>You signed in as 
+        ${this.getRequest.result[0].name} (${
+              this.getRequest.result[0].role === 101 ? "admin" : "user"
+            })</li>
+        <li><button id="contact-button">Contact</button></li>
+        `;
+          document.querySelector(".header-navigation > ul").innerHTML = html;
+        } else {
+          let html = `
+        <li><button id="signUp-button">Signup</button></li>
+        <li><button id="signIn-button">Signin</button></li> 
+        <li><button id="contact-button">Contact</button></li>
+        `;
+          document.querySelector(".header-navigation > ul").innerHTML = html;
         }
+      };
+      this.transaction.oncomplete = () => {
+        this.transaction = this.db.transaction("books");
+        this.storeName = this.transaction.objectStore("books");
+        this.getRequest = this.storeName.openCursor();
+        this.getRequest.onerror = this.onError;
+        this.getRequest.onsuccess = () => {
+          if (!input) {
+            return false;
+          }
 
-        document.getElementById("search-input").value = document.getElementById(
-          "search-results-lable"
-        ).innerHTML = `${input}`;
-        this.cursor = this.getRequest.result;
-        if (this.cursor) {
-          this.bookName = this.cursor.value;
+          document.getElementById("search-input").value =
+            document.getElementById(
+              "search-results-lable"
+            ).innerHTML = `${input}`;
+          this.cursor = this.getRequest.result;
+          if (this.cursor) {
+            this.bookName = this.cursor.value;
 
-          if (
-            this.bookName.name.toLowerCase().startsWith(input.toLowerCase())
-          ) {
-            let item = ` 
+            if (
+              this.bookName.name.toLowerCase().startsWith(input.toLowerCase())
+            ) {
+              let item = ` 
          <div class="book-wrapper">
         <button data-id='${
           this.bookName.name
@@ -649,8 +701,8 @@ class DBconnection {
         <img src="${randomPhoto()}" alt="book" />
         <div>
           <p>Available ${this.bookName.availableCount}/${
-              this.bookName.totalCount
-            }</p>
+                this.bookName.totalCount
+              }</p>
           <h3>${this.bookName.name}</h3>
           <h4>${this.bookName.author}</h4>
           <p>
@@ -659,23 +711,24 @@ class DBconnection {
         </div>
       </div>
       `;
-            document
-              .querySelector(".search-results-content")
-              .insertAdjacentHTML("beforeend", item);
+              document
+                .querySelector(".search-results-content")
+                .insertAdjacentHTML("beforeend", item);
+            }
+            this.cursor.continue();
+          } else {
+            if (
+              document
+                .querySelector(".search-results-content")
+                .textContent.trim() === ""
+            ) {
+              document.querySelector(
+                ".search-results-content"
+              ).innerHTML = `<p>Unfortunately nothing was found!</p>`;
+            }
+            console.log("cursor search finished");
           }
-          this.cursor.continue();
-        } else {
-          if (
-            document
-              .querySelector(".search-results-content")
-              .textContent.trim() === ""
-          ) {
-            document.querySelector(
-              ".search-results-content"
-            ).innerHTML = `<p>Unfortunately nothing was found!</p>`;
-          }
-          console.log("cursor search finished");
-        }
+        };
       };
     };
   };
