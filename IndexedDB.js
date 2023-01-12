@@ -107,44 +107,71 @@ class DBconnection {
         //if nothing there - adding admin and 2 books
         if (this.getRequest.result.length < 1) {
           this.addRequest = this.storeName.add(this.adminData);
-          this.transaction = this.db.transaction("books", "readwrite");
-          this.storeName = this.transaction.objectStore("books");
-          this.getRequest = this.storeName.getAll();
-          this.getRequest.onerror = this.onError;
-          this.getRequest.onsuccess = () => {
-            if (this.getRequest.result.length < 1) {
-              this.booksData.forEach((el) => {
-                this.addRequest = this.storeName.add(el);
-              });
-              alert(
-                "application initialized. You can sign in as admin using email: admin@gmail.com, password: admin"
-              );
-            }
+          this.addRequest.onerror = this.onError;
+          this.addRequest.onsuccess = () => {
+            this.transaction = this.db.transaction("books", "readwrite");
+            this.storeName = this.transaction.objectStore("books");
+            this.getRequest = this.storeName.getAll();
+            this.getRequest.onerror = this.onError;
+            this.getRequest.onsuccess = () => {
+              if (this.getRequest.result.length < 1) {
+                this.booksData.forEach((el) => {
+                  this.addRequest = this.storeName.add(el);
+                });
+                if (
+                  document.URL.includes("index") ||
+                  location.pathname === "/" ||
+                  location.pathname === "/Local-Library-app/"
+                ) {
+                  dbConnection.checkActiveUser();
+                } else if (
+                  document.URL.includes("user") ||
+                  document.URL.includes("admin")
+                ) {
+                  dbConnection.ativeUserProfileRender();
+                } else if (document.URL.includes("search")) {
+                  dbConnection.renderSearchResults(
+                    decodeURIComponent(
+                      window.location.search
+                        .slice(window.location.search.indexOf("=") + 1)
+                        .split("+")
+                        .join(" ")
+                        .trim()
+                    )
+                  );
+                }
+                alert(
+                  "application initialized. You can sign in as admin using email: admin@gmail.com, password: admin"
+                );
+              } 
+            };
           };
-        }
-        //regardless of previous check - calling methods to render UI
-        //for different pages
-        if (
-          document.URL.includes("index") ||
-          location.pathname === "/" ||
-          location.pathname === "/Local-Library-app/"
-        ) {
-          dbConnection.checkActiveUser();
-        } else if (
-          document.URL.includes("user") ||
-          document.URL.includes("admin")
-        ) {
-          dbConnection.ativeUserProfileRender();
-        } else if (document.URL.includes("search")) {
-          dbConnection.renderSearchResults(
-            decodeURIComponent(
-              window.location.search
-                .slice(window.location.search.indexOf("=") + 1)
-                .split("+")
-                .join(" ")
-                .trim()
-            )
-          );
+        } else {
+          console.log('111');
+          //regardless of previous check - calling methods to render UI
+          //for different pages
+          if (
+            document.URL.includes("index") ||
+            location.pathname === "/" ||
+            location.pathname === "/Local-Library-app/"
+          ) {
+            dbConnection.checkActiveUser();
+          } else if (
+            document.URL.includes("user") ||
+            document.URL.includes("admin")
+          ) {
+            dbConnection.ativeUserProfileRender();
+          } else if (document.URL.includes("search")) {
+            dbConnection.renderSearchResults(
+              decodeURIComponent(
+                window.location.search
+                  .slice(window.location.search.indexOf("=") + 1)
+                  .split("+")
+                  .join(" ")
+                  .trim()
+              )
+            );
+          }
         }
       };
       this.getRequest.onerror = () => {
